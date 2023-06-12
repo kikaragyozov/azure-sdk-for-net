@@ -13,7 +13,6 @@ using Azure.Identity;
 using Azure.ResourceManager;
 using Azure.ResourceManager.NetworkCloud;
 using Azure.ResourceManager.NetworkCloud.Models;
-using Azure.ResourceManager.Resources;
 
 namespace Azure.ResourceManager.NetworkCloud.Samples
 {
@@ -24,7 +23,7 @@ namespace Azure.ResourceManager.NetworkCloud.Samples
         [NUnit.Framework.Ignore("Only verifying that the sample builds")]
         public async Task GetStorageAppliances_ListStorageAppliancesForSubscription()
         {
-            // Generated from example definition: specification/networkcloud/resource-manager/Microsoft.NetworkCloud/preview/2022-12-12-preview/examples/StorageAppliances_ListBySubscription.json
+            // Generated from example definition: specification/networkcloud/resource-manager/Microsoft.NetworkCloud/preview/2023-05-01-preview/examples/StorageAppliances_ListBySubscription.json
             // this example is just showing the usage of "StorageAppliances_ListBySubscription" operation, for the dependent resources, they will have to be created separately.
 
             // get your azure access token, for more details of how Azure SDK get your access token, please refer to https://learn.microsoft.com/en-us/dotnet/azure/sdk/authentication?tabs=command-line
@@ -32,14 +31,12 @@ namespace Azure.ResourceManager.NetworkCloud.Samples
             // authenticate your client
             ArmClient client = new ArmClient(cred);
 
-            // this example assumes you already have this SubscriptionResource created on azure
-            // for more information of creating SubscriptionResource, please refer to the document of SubscriptionResource
-            string subscriptionId = "subscriptionId";
-            ResourceIdentifier subscriptionResourceId = SubscriptionResource.CreateResourceIdentifier(subscriptionId);
-            SubscriptionResource subscriptionResource = client.GetSubscriptionResource(subscriptionResourceId);
+            // this example assumes you already have this TenantResource created on azure
+            // for more information of creating TenantResource, please refer to the document of TenantResource
+            var tenantResource = client.GetTenants().GetAllAsync().GetAsyncEnumerator().Current;
 
             // invoke the operation and iterate over the result
-            await foreach (StorageApplianceResource item in subscriptionResource.GetStorageAppliancesAsync())
+            await foreach (StorageApplianceResource item in tenantResource.GetStorageAppliancesAsync())
             {
                 // the variable item is a resource, you could call other operations on this instance as well
                 // but just for demo, we get its data from this resource instance
@@ -56,7 +53,7 @@ namespace Azure.ResourceManager.NetworkCloud.Samples
         [NUnit.Framework.Ignore("Only verifying that the sample builds")]
         public async Task Get_GetStorageAppliance()
         {
-            // Generated from example definition: specification/networkcloud/resource-manager/Microsoft.NetworkCloud/preview/2022-12-12-preview/examples/StorageAppliances_Get.json
+            // Generated from example definition: specification/networkcloud/resource-manager/Microsoft.NetworkCloud/preview/2023-05-01-preview/examples/StorageAppliances_Get.json
             // this example is just showing the usage of "StorageAppliances_Get" operation, for the dependent resources, they will have to be created separately.
 
             // get your azure access token, for more details of how Azure SDK get your access token, please refer to https://learn.microsoft.com/en-us/dotnet/azure/sdk/authentication?tabs=command-line
@@ -66,7 +63,7 @@ namespace Azure.ResourceManager.NetworkCloud.Samples
 
             // this example assumes you already have this StorageApplianceResource created on azure
             // for more information of creating StorageApplianceResource, please refer to the document of StorageApplianceResource
-            string subscriptionId = "subscriptionId";
+            Guid subscriptionId = Guid.Parse("123e4567-e89b-12d3-a456-426655440000");
             string resourceGroupName = "resourceGroupName";
             string storageApplianceName = "storageApplianceName";
             ResourceIdentifier storageApplianceResourceId = StorageApplianceResource.CreateResourceIdentifier(subscriptionId, resourceGroupName, storageApplianceName);
@@ -87,7 +84,7 @@ namespace Azure.ResourceManager.NetworkCloud.Samples
         [NUnit.Framework.Ignore("Only verifying that the sample builds")]
         public async Task Update_PatchStorageAppliance()
         {
-            // Generated from example definition: specification/networkcloud/resource-manager/Microsoft.NetworkCloud/preview/2022-12-12-preview/examples/StorageAppliances_Patch.json
+            // Generated from example definition: specification/networkcloud/resource-manager/Microsoft.NetworkCloud/preview/2023-05-01-preview/examples/StorageAppliances_Patch.json
             // this example is just showing the usage of "StorageAppliances_Update" operation, for the dependent resources, they will have to be created separately.
 
             // get your azure access token, for more details of how Azure SDK get your access token, please refer to https://learn.microsoft.com/en-us/dotnet/azure/sdk/authentication?tabs=command-line
@@ -97,7 +94,7 @@ namespace Azure.ResourceManager.NetworkCloud.Samples
 
             // this example assumes you already have this StorageApplianceResource created on azure
             // for more information of creating StorageApplianceResource, please refer to the document of StorageApplianceResource
-            string subscriptionId = "subscriptionId";
+            Guid subscriptionId = Guid.Parse("123e4567-e89b-12d3-a456-426655440000");
             string resourceGroupName = "resourceGroupName";
             string storageApplianceName = "storageApplianceName";
             ResourceIdentifier storageApplianceResourceId = StorageApplianceResource.CreateResourceIdentifier(subscriptionId, resourceGroupName, storageApplianceName);
@@ -128,7 +125,7 @@ namespace Azure.ResourceManager.NetworkCloud.Samples
         [NUnit.Framework.Ignore("Only verifying that the sample builds")]
         public async Task DisableRemoteVendorManagement_TurnOffRemoteVendorManagementForStorageAppliance()
         {
-            // Generated from example definition: specification/networkcloud/resource-manager/Microsoft.NetworkCloud/preview/2022-12-12-preview/examples/StorageAppliances_DisableRemoteVendorManagement.json
+            // Generated from example definition: specification/networkcloud/resource-manager/Microsoft.NetworkCloud/preview/2023-05-01-preview/examples/StorageAppliances_DisableRemoteVendorManagement.json
             // this example is just showing the usage of "StorageAppliances_DisableRemoteVendorManagement" operation, for the dependent resources, they will have to be created separately.
 
             // get your azure access token, for more details of how Azure SDK get your access token, please refer to https://learn.microsoft.com/en-us/dotnet/azure/sdk/authentication?tabs=command-line
@@ -138,7 +135,7 @@ namespace Azure.ResourceManager.NetworkCloud.Samples
 
             // this example assumes you already have this StorageApplianceResource created on azure
             // for more information of creating StorageApplianceResource, please refer to the document of StorageApplianceResource
-            string subscriptionId = "subscriptionId";
+            Guid subscriptionId = Guid.Parse("123e4567-e89b-12d3-a456-426655440000");
             string resourceGroupName = "resourceGroupName";
             string storageApplianceName = "storageApplianceName";
             ResourceIdentifier storageApplianceResourceId = StorageApplianceResource.CreateResourceIdentifier(subscriptionId, resourceGroupName, storageApplianceName);
@@ -155,7 +152,7 @@ namespace Azure.ResourceManager.NetworkCloud.Samples
         [NUnit.Framework.Ignore("Only verifying that the sample builds")]
         public async Task EnableRemoteVendorManagement_TurnOnRemoteVendorManagementForStorageAppliance()
         {
-            // Generated from example definition: specification/networkcloud/resource-manager/Microsoft.NetworkCloud/preview/2022-12-12-preview/examples/StorageAppliances_EnableRemoteVendorManagement.json
+            // Generated from example definition: specification/networkcloud/resource-manager/Microsoft.NetworkCloud/preview/2023-05-01-preview/examples/StorageAppliances_EnableRemoteVendorManagement.json
             // this example is just showing the usage of "StorageAppliances_EnableRemoteVendorManagement" operation, for the dependent resources, they will have to be created separately.
 
             // get your azure access token, for more details of how Azure SDK get your access token, please refer to https://learn.microsoft.com/en-us/dotnet/azure/sdk/authentication?tabs=command-line
@@ -165,7 +162,7 @@ namespace Azure.ResourceManager.NetworkCloud.Samples
 
             // this example assumes you already have this StorageApplianceResource created on azure
             // for more information of creating StorageApplianceResource, please refer to the document of StorageApplianceResource
-            string subscriptionId = "subscriptionId";
+            Guid subscriptionId = Guid.Parse("123e4567-e89b-12d3-a456-426655440000");
             string resourceGroupName = "resourceGroupName";
             string storageApplianceName = "storageApplianceName";
             ResourceIdentifier storageApplianceResourceId = StorageApplianceResource.CreateResourceIdentifier(subscriptionId, resourceGroupName, storageApplianceName);
@@ -189,7 +186,7 @@ namespace Azure.ResourceManager.NetworkCloud.Samples
         [NUnit.Framework.Ignore("Only verifying that the sample builds")]
         public async Task RunReadCommands_RunAndRetrieveOutputFromReadOnlyCommandsOnStorageAppliance()
         {
-            // Generated from example definition: specification/networkcloud/resource-manager/Microsoft.NetworkCloud/preview/2022-12-12-preview/examples/StorageAppliances_RunReadCommands.json
+            // Generated from example definition: specification/networkcloud/resource-manager/Microsoft.NetworkCloud/preview/2023-05-01-preview/examples/StorageAppliances_RunReadCommands.json
             // this example is just showing the usage of "StorageAppliances_RunReadCommands" operation, for the dependent resources, they will have to be created separately.
 
             // get your azure access token, for more details of how Azure SDK get your access token, please refer to https://learn.microsoft.com/en-us/dotnet/azure/sdk/authentication?tabs=command-line
@@ -199,7 +196,7 @@ namespace Azure.ResourceManager.NetworkCloud.Samples
 
             // this example assumes you already have this StorageApplianceResource created on azure
             // for more information of creating StorageApplianceResource, please refer to the document of StorageApplianceResource
-            string subscriptionId = "subscriptionId";
+            Guid subscriptionId = Guid.Parse("123e4567-e89b-12d3-a456-426655440000");
             string resourceGroupName = "resourceGroupName";
             string storageApplianceName = "storageApplianceName";
             ResourceIdentifier storageApplianceResourceId = StorageApplianceResource.CreateResourceIdentifier(subscriptionId, resourceGroupName, storageApplianceName);
@@ -211,34 +208,6 @@ namespace Azure.ResourceManager.NetworkCloud.Samples
 new StorageApplianceCommandSpecification("AlertList")
             }, 60);
             await storageAppliance.RunReadCommandsAsync(WaitUntil.Completed, content);
-
-            Console.WriteLine($"Succeeded");
-        }
-
-        // Validate the storage appliance hardware
-        [NUnit.Framework.Test]
-        [NUnit.Framework.Ignore("Only verifying that the sample builds")]
-        public async Task ValidateHardware_ValidateTheStorageApplianceHardware()
-        {
-            // Generated from example definition: specification/networkcloud/resource-manager/Microsoft.NetworkCloud/preview/2022-12-12-preview/examples/StorageAppliances_ValidateHardware.json
-            // this example is just showing the usage of "StorageAppliances_ValidateHardware" operation, for the dependent resources, they will have to be created separately.
-
-            // get your azure access token, for more details of how Azure SDK get your access token, please refer to https://learn.microsoft.com/en-us/dotnet/azure/sdk/authentication?tabs=command-line
-            TokenCredential cred = new DefaultAzureCredential();
-            // authenticate your client
-            ArmClient client = new ArmClient(cred);
-
-            // this example assumes you already have this StorageApplianceResource created on azure
-            // for more information of creating StorageApplianceResource, please refer to the document of StorageApplianceResource
-            string subscriptionId = "subscriptionId";
-            string resourceGroupName = "resourceGroupName";
-            string storageApplianceName = "storageApplianceName";
-            ResourceIdentifier storageApplianceResourceId = StorageApplianceResource.CreateResourceIdentifier(subscriptionId, resourceGroupName, storageApplianceName);
-            StorageApplianceResource storageAppliance = client.GetStorageApplianceResource(storageApplianceResourceId);
-
-            // invoke the operation
-            StorageApplianceValidateHardwareContent content = new StorageApplianceValidateHardwareContent(StorageApplianceHardwareValidationCategory.BasicValidation);
-            await storageAppliance.ValidateHardwareAsync(WaitUntil.Completed, content);
 
             Console.WriteLine($"Succeeded");
         }
