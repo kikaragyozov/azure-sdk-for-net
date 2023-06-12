@@ -48,32 +48,33 @@ rename-rules:
   Etag: ETag|etag
 
 directive:
-     # explicitly define the expected format as duration
-     - from: networkcloud.json
-       where: $.definitions
-       transform:
-         $.ClusterAvailableUpgradeVersion.properties.expectedDuration['x-ms-format'] = 'duration';
-     # The `password` is not required as it return null from service side
-     - from: networkcloud.json
-        where: $.definitions
-        transform:
-          $.AdministrativeCredentials.required = [ "username" ];
-          $.ImageRepositoryCredentials.required = [
-            "username",
-            "registryUrl"
-          ];
-          $.ServicePrincipalInformation.required = [
-            "tenantId",
-            "principalId",
-            "applicationId"
-          ];
-      # `delete` transformations are to remove APIs/methods that result in Access Denied for end users.
-      - remove-operation: BareMetalMachines_CreateOrUpdate
-      - remove-operation: BareMetalMachines_Delete
-      - remove-operation: HybridAksClusters_CreateOrUpdate
-      - remove-operation: HybridAksClusters_Delete
-      - remove-operation: Racks_CreateOrUpdate
-      - remove-operation: Racks_Delete
-      - remove-operation: StorageAppliances_CreateOrUpdate
-      - remove-operation: StorageAppliances_Delete
+  # explicitly define the expected format as duration
+  - from: networkcloud.json
+    where: $.definitions
+    transform:
+      $.ClusterAvailableUpgradeVersion.properties.expectedDuration['x-ms-format'] = 'duration';
+  # The `password` is not required as it return null from service side
+  - from: networkcloud.json
+    where: $.definitions
+    transform:
+      $.AdministrativeCredentials.required = [ 'username' ];
+      $.ImageRepositoryCredentials.required = [
+        'username',
+        'registryUrl'
+      ];
+      $.ServicePrincipalInformation.required = [
+        'tenantId',
+        'principalId',
+        'applicationId'
+      ];
+  # `delete` transformations are to remove APIs/methods that result in Access Denied for end users.
+  - remove-operation: BareMetalMachines_CreateOrUpdate
+  - remove-operation: BareMetalMachines_Delete
+  - remove-operation: HybridAksClusters_CreateOrUpdate
+  - remove-operation: HybridAksClusters_Delete
+  - remove-operation: Racks_CreateOrUpdate
+  - remove-operation: Racks_Delete
+  - remove-operation: StorageAppliances_CreateOrUpdate
+  - remove-operation: StorageAppliances_Delete
+
 ```
