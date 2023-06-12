@@ -7,12 +7,47 @@ azure-arm: true
 csharp: true
 library-name: NetworkCloud
 namespace: Azure.ResourceManager.NetworkCloud
-require: https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/networkcloud/resource-manager/readme.md
+require: https://github.com/Azure/azure-rest-api-specs/blob/7a92098c9b3cf46ec9158ae91dc8c5cdf87b6c12/specification/networkcloud/resource-manager/readme.md
 output-folder: $(this-folder)/Generated
 clear-output-folder: true
 skip-csproj: true
 modelerfour:
   flatten-payloads: false
+
+format-by-name-rules:
+  'tenantId': 'uuid'
+  'ETag': 'etag'
+  'location': 'azure-location'
+  '*Uri': 'Uri'
+  '*Uris': 'Uri'
+
+rename-mapping:
+  ImageRepositoryCredentials.registryUrl: registryUriString
+
+rename-rules:
+  CPU: Cpu
+  CPUs: Cpus
+  Os: OS
+  Ip: IP
+  Ips: IPs|ips
+  ID: Id
+  IDs: Ids
+  VM: Vm
+  VMs: Vms
+  Vmos: VmOS
+  VMScaleSet: VmScaleSet
+  DNS: Dns
+  VPN: Vpn
+  NAT: Nat
+  WAN: Wan
+  Ipv4: IPv4|ipv4
+  Ipv6: IPv6|ipv6
+  Ipsec: IPsec|ipsec
+  SSO: Sso
+  URI: Uri
+  Etag: ETag|etag
+
+```
 
 directive:
      - from: networkcloud.json
@@ -42,35 +77,3 @@ directive:
       - remove-operation: Racks_Delete
       - remove-operation: StorageAppliances_CreateOrUpdate
       - remove-operation: StorageAppliances_Delete
-
-format-by-name-rules:
-  'tenantId': 'uuid'
-  'ETag': 'etag'
-  'location': 'azure-location'
-  '*Uri': 'Uri'
-  '*Uris': 'Uri'
-
-rename-rules:
-  CPU: Cpu
-  CPUs: Cpus
-  Os: OS
-  Ip: IP
-  Ips: IPs|ips
-  ID: Id
-  IDs: Ids
-  VM: Vm
-  VMs: Vms
-  Vmos: VmOS
-  VMScaleSet: VmScaleSet
-  DNS: Dns
-  VPN: Vpn
-  NAT: Nat
-  WAN: Wan
-  Ipv4: IPv4|ipv4
-  Ipv6: IPv6|ipv6
-  Ipsec: IPsec|ipsec
-  SSO: Sso
-  URI: Uri
-  Etag: ETag|etag
-
-```
