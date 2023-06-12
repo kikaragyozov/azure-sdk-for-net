@@ -47,9 +47,8 @@ rename-rules:
   URI: Uri
   Etag: ETag|etag
 
-```
-
 directive:
+     # explicitly define the expected format as duration
      - from: networkcloud.json
        where: $.definitions
        transform:
@@ -58,7 +57,7 @@ directive:
      - from: networkcloud.json
         where: $.definitions
         transform:
-          $.AdministrativeCredentials.required =  [ "username" ]; 
+          $.AdministrativeCredentials.required = [ "username" ];
           $.ImageRepositoryCredentials.required = [
             "username",
             "registryUrl"
@@ -77,3 +76,5 @@ directive:
       - remove-operation: Racks_Delete
       - remove-operation: StorageAppliances_CreateOrUpdate
       - remove-operation: StorageAppliances_Delete
+```
+
