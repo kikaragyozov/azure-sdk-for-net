@@ -21,12 +21,12 @@ namespace Azure.ResourceManager.NetworkCloud
     /// A Class representing a RackSku along with the instance operations that can be performed on it.
     /// If you have a <see cref="ResourceIdentifier" /> you can construct a <see cref="RackSkuResource" />
     /// from an instance of <see cref="ArmClient" /> using the GetRackSkuResource method.
-    /// Otherwise you can get one from its parent resource <see cref="SubscriptionResource" /> using the GetRackSku method.
+    /// Otherwise you can get one from its parent resource <see cref="TenantResource" /> using the GetRackSku method.
     /// </summary>
     public partial class RackSkuResource : ArmResource
     {
         /// <summary> Generate the resource identifier of a <see cref="RackSkuResource"/> instance. </summary>
-        public static ResourceIdentifier CreateResourceIdentifier(string subscriptionId, string rackSkuName)
+        public static ResourceIdentifier CreateResourceIdentifier(Guid subscriptionId, string rackSkuName)
         {
             var resourceId = $"/subscriptions/{subscriptionId}/providers/Microsoft.NetworkCloud/rackSkus/{rackSkuName}";
             return new ResourceIdentifier(resourceId);
@@ -107,7 +107,7 @@ namespace Azure.ResourceManager.NetworkCloud
             scope.Start();
             try
             {
-                var response = await _rackSkuRestClient.GetAsync(Id.SubscriptionId, Id.Name, cancellationToken).ConfigureAwait(false);
+                var response = await _rackSkuRestClient.GetAsync(Guid.Parse(Id.Parent.Name), Id.Name, cancellationToken).ConfigureAwait(false);
                 if (response.Value == null)
                     throw new RequestFailedException(response.GetRawResponse());
                 return Response.FromValue(new RackSkuResource(Client, response.Value), response.GetRawResponse());
@@ -139,7 +139,7 @@ namespace Azure.ResourceManager.NetworkCloud
             scope.Start();
             try
             {
-                var response = _rackSkuRestClient.Get(Id.SubscriptionId, Id.Name, cancellationToken);
+                var response = _rackSkuRestClient.Get(Guid.Parse(Id.Parent.Name), Id.Name, cancellationToken);
                 if (response.Value == null)
                     throw new RequestFailedException(response.GetRawResponse());
                 return Response.FromValue(new RackSkuResource(Client, response.Value), response.GetRawResponse());

@@ -21,13 +21,14 @@ namespace Azure.ResourceManager.NetworkCloud
 {
     /// <summary>
     /// A class representing a collection of <see cref="RackSkuResource" /> and their operations.
-    /// Each <see cref="RackSkuResource" /> in the collection will belong to the same instance of <see cref="SubscriptionResource" />.
-    /// To get a <see cref="RackSkuCollection" /> instance call the GetRackSkus method from an instance of <see cref="SubscriptionResource" />.
+    /// Each <see cref="RackSkuResource" /> in the collection will belong to the same instance of <see cref="TenantResource" />.
+    /// To get a <see cref="RackSkuCollection" /> instance call the GetRackSkus method from an instance of <see cref="TenantResource" />.
     /// </summary>
     public partial class RackSkuCollection : ArmCollection, IEnumerable<RackSkuResource>, IAsyncEnumerable<RackSkuResource>
     {
         private readonly ClientDiagnostics _rackSkuClientDiagnostics;
         private readonly RackSkusRestOperations _rackSkuRestClient;
+        private readonly Guid _subscriptionId;
 
         /// <summary> Initializes a new instance of the <see cref="RackSkuCollection"/> class for mocking. </summary>
         protected RackSkuCollection()
@@ -37,8 +38,10 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <summary> Initializes a new instance of the <see cref="RackSkuCollection"/> class. </summary>
         /// <param name="client"> The client parameters to use in these operations. </param>
         /// <param name="id"> The identifier of the parent resource that is the target of operations. </param>
-        internal RackSkuCollection(ArmClient client, ResourceIdentifier id) : base(client, id)
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
+        internal RackSkuCollection(ArmClient client, ResourceIdentifier id, Guid subscriptionId) : base(client, id)
         {
+            _subscriptionId = subscriptionId;
             _rackSkuClientDiagnostics = new ClientDiagnostics("Azure.ResourceManager.NetworkCloud", RackSkuResource.ResourceType.Namespace, Diagnostics);
             TryGetApiVersion(RackSkuResource.ResourceType, out string rackSkuApiVersion);
             _rackSkuRestClient = new RackSkusRestOperations(Pipeline, Diagnostics.ApplicationId, Endpoint, rackSkuApiVersion);
@@ -49,8 +52,8 @@ namespace Azure.ResourceManager.NetworkCloud
 
         internal static void ValidateResourceId(ResourceIdentifier id)
         {
-            if (id.ResourceType != SubscriptionResource.ResourceType)
-                throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Invalid resource type {0} expected {1}", id.ResourceType, SubscriptionResource.ResourceType), nameof(id));
+            if (id.ResourceType != TenantResource.ResourceType)
+                throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Invalid resource type {0} expected {1}", id.ResourceType, TenantResource.ResourceType), nameof(id));
         }
 
         /// <summary>
@@ -78,7 +81,7 @@ namespace Azure.ResourceManager.NetworkCloud
             scope.Start();
             try
             {
-                var response = await _rackSkuRestClient.GetAsync(Id.SubscriptionId, rackSkuName, cancellationToken).ConfigureAwait(false);
+                var response = await _rackSkuRestClient.GetAsync(Guid.Parse(_subscriptionId), rackSkuName, cancellationToken).ConfigureAwait(false);
                 if (response.Value == null)
                     throw new RequestFailedException(response.GetRawResponse());
                 return Response.FromValue(new RackSkuResource(Client, response.Value), response.GetRawResponse());
@@ -115,7 +118,7 @@ namespace Azure.ResourceManager.NetworkCloud
             scope.Start();
             try
             {
-                var response = _rackSkuRestClient.Get(Id.SubscriptionId, rackSkuName, cancellationToken);
+                var response = _rackSkuRestClient.Get(Guid.Parse(_subscriptionId), rackSkuName, cancellationToken);
                 if (response.Value == null)
                     throw new RequestFailedException(response.GetRawResponse());
                 return Response.FromValue(new RackSkuResource(Client, response.Value), response.GetRawResponse());
@@ -144,8 +147,8 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <returns> An async collection of <see cref="RackSkuResource" /> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<RackSkuResource> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            HttpMessage FirstPageRequest(int? pageSizeHint) => _rackSkuRestClient.CreateListBySubscriptionRequest(Id.SubscriptionId);
-            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _rackSkuRestClient.CreateListBySubscriptionNextPageRequest(nextLink, Id.SubscriptionId);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _rackSkuRestClient.CreateListBySubscriptionRequest(Guid.Parse(_subscriptionId));
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _rackSkuRestClient.CreateListBySubscriptionNextPageRequest(nextLink, Guid.Parse(_subscriptionId));
             return PageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, e => new RackSkuResource(Client, RackSkuData.DeserializeRackSkuData(e)), _rackSkuClientDiagnostics, Pipeline, "RackSkuCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
@@ -166,8 +169,8 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <returns> A collection of <see cref="RackSkuResource" /> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<RackSkuResource> GetAll(CancellationToken cancellationToken = default)
         {
-            HttpMessage FirstPageRequest(int? pageSizeHint) => _rackSkuRestClient.CreateListBySubscriptionRequest(Id.SubscriptionId);
-            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _rackSkuRestClient.CreateListBySubscriptionNextPageRequest(nextLink, Id.SubscriptionId);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _rackSkuRestClient.CreateListBySubscriptionRequest(Guid.Parse(_subscriptionId));
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _rackSkuRestClient.CreateListBySubscriptionNextPageRequest(nextLink, Guid.Parse(_subscriptionId));
             return PageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, e => new RackSkuResource(Client, RackSkuData.DeserializeRackSkuData(e)), _rackSkuClientDiagnostics, Pipeline, "RackSkuCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
@@ -196,7 +199,7 @@ namespace Azure.ResourceManager.NetworkCloud
             scope.Start();
             try
             {
-                var response = await _rackSkuRestClient.GetAsync(Id.SubscriptionId, rackSkuName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                var response = await _rackSkuRestClient.GetAsync(Guid.Parse(_subscriptionId), rackSkuName, cancellationToken: cancellationToken).ConfigureAwait(false);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
             }
             catch (Exception e)
@@ -231,7 +234,7 @@ namespace Azure.ResourceManager.NetworkCloud
             scope.Start();
             try
             {
-                var response = _rackSkuRestClient.Get(Id.SubscriptionId, rackSkuName, cancellationToken: cancellationToken);
+                var response = _rackSkuRestClient.Get(Guid.Parse(_subscriptionId), rackSkuName, cancellationToken: cancellationToken);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
             }
             catch (Exception e)

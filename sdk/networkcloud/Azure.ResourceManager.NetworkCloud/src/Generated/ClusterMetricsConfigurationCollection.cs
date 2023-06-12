@@ -53,7 +53,7 @@ namespace Azure.ResourceManager.NetworkCloud
         }
 
         /// <summary>
-        /// Update the metrics configuration of the provided cluster.
+        /// Create new or update the existing metrics configuration of the provided cluster.
         /// <list type="bullet">
         /// <item>
         /// <term>Request Path</term>
@@ -80,8 +80,8 @@ namespace Azure.ResourceManager.NetworkCloud
             scope.Start();
             try
             {
-                var response = await _clusterMetricsConfigurationMetricsConfigurationsRestClient.CreateOrUpdateAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, metricsConfigurationName, data, cancellationToken).ConfigureAwait(false);
-                var operation = new NetworkCloudArmOperation<ClusterMetricsConfigurationResource>(new ClusterMetricsConfigurationOperationSource(Client), _clusterMetricsConfigurationMetricsConfigurationsClientDiagnostics, Pipeline, _clusterMetricsConfigurationMetricsConfigurationsRestClient.CreateCreateOrUpdateRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, metricsConfigurationName, data).Request, response, OperationFinalStateVia.AzureAsyncOperation);
+                var response = await _clusterMetricsConfigurationMetricsConfigurationsRestClient.CreateOrUpdateAsync(Guid.Parse(Id.Parent.Parent.Name), Id.Parent.Name, Id.Name, metricsConfigurationName, data, cancellationToken).ConfigureAwait(false);
+                var operation = new NetworkCloudArmOperation<ClusterMetricsConfigurationResource>(new ClusterMetricsConfigurationOperationSource(Client), _clusterMetricsConfigurationMetricsConfigurationsClientDiagnostics, Pipeline, _clusterMetricsConfigurationMetricsConfigurationsRestClient.CreateCreateOrUpdateRequest(Guid.Parse(Id.Parent.Parent.Name), Id.Parent.Name, Id.Name, metricsConfigurationName, data).Request, response, OperationFinalStateVia.AzureAsyncOperation);
                 if (waitUntil == WaitUntil.Completed)
                     await operation.WaitForCompletionAsync(cancellationToken).ConfigureAwait(false);
                 return operation;
@@ -94,7 +94,7 @@ namespace Azure.ResourceManager.NetworkCloud
         }
 
         /// <summary>
-        /// Update the metrics configuration of the provided cluster.
+        /// Create new or update the existing metrics configuration of the provided cluster.
         /// <list type="bullet">
         /// <item>
         /// <term>Request Path</term>
@@ -121,8 +121,8 @@ namespace Azure.ResourceManager.NetworkCloud
             scope.Start();
             try
             {
-                var response = _clusterMetricsConfigurationMetricsConfigurationsRestClient.CreateOrUpdate(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, metricsConfigurationName, data, cancellationToken);
-                var operation = new NetworkCloudArmOperation<ClusterMetricsConfigurationResource>(new ClusterMetricsConfigurationOperationSource(Client), _clusterMetricsConfigurationMetricsConfigurationsClientDiagnostics, Pipeline, _clusterMetricsConfigurationMetricsConfigurationsRestClient.CreateCreateOrUpdateRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, metricsConfigurationName, data).Request, response, OperationFinalStateVia.AzureAsyncOperation);
+                var response = _clusterMetricsConfigurationMetricsConfigurationsRestClient.CreateOrUpdate(Guid.Parse(Id.Parent.Parent.Name), Id.Parent.Name, Id.Name, metricsConfigurationName, data, cancellationToken);
+                var operation = new NetworkCloudArmOperation<ClusterMetricsConfigurationResource>(new ClusterMetricsConfigurationOperationSource(Client), _clusterMetricsConfigurationMetricsConfigurationsClientDiagnostics, Pipeline, _clusterMetricsConfigurationMetricsConfigurationsRestClient.CreateCreateOrUpdateRequest(Guid.Parse(Id.Parent.Parent.Name), Id.Parent.Name, Id.Name, metricsConfigurationName, data).Request, response, OperationFinalStateVia.AzureAsyncOperation);
                 if (waitUntil == WaitUntil.Completed)
                     operation.WaitForCompletion(cancellationToken);
                 return operation;
@@ -159,7 +159,7 @@ namespace Azure.ResourceManager.NetworkCloud
             scope.Start();
             try
             {
-                var response = await _clusterMetricsConfigurationMetricsConfigurationsRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, metricsConfigurationName, cancellationToken).ConfigureAwait(false);
+                var response = await _clusterMetricsConfigurationMetricsConfigurationsRestClient.GetAsync(Guid.Parse(Id.Parent.Parent.Name), Id.Parent.Name, Id.Name, metricsConfigurationName, cancellationToken).ConfigureAwait(false);
                 if (response.Value == null)
                     throw new RequestFailedException(response.GetRawResponse());
                 return Response.FromValue(new ClusterMetricsConfigurationResource(Client, response.Value), response.GetRawResponse());
@@ -196,7 +196,7 @@ namespace Azure.ResourceManager.NetworkCloud
             scope.Start();
             try
             {
-                var response = _clusterMetricsConfigurationMetricsConfigurationsRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, metricsConfigurationName, cancellationToken);
+                var response = _clusterMetricsConfigurationMetricsConfigurationsRestClient.Get(Guid.Parse(Id.Parent.Parent.Name), Id.Parent.Name, Id.Name, metricsConfigurationName, cancellationToken);
                 if (response.Value == null)
                     throw new RequestFailedException(response.GetRawResponse());
                 return Response.FromValue(new ClusterMetricsConfigurationResource(Client, response.Value), response.GetRawResponse());
@@ -209,7 +209,7 @@ namespace Azure.ResourceManager.NetworkCloud
         }
 
         /// <summary>
-        /// Get a list of metrics configurations of the clusters in the provided resource group.
+        /// Get a list of metrics configurations for the provided cluster.
         /// <list type="bullet">
         /// <item>
         /// <term>Request Path</term>
@@ -217,7 +217,7 @@ namespace Azure.ResourceManager.NetworkCloud
         /// </item>
         /// <item>
         /// <term>Operation Id</term>
-        /// <description>MetricsConfigurations_ListByResourceGroup</description>
+        /// <description>MetricsConfigurations_ListByCluster</description>
         /// </item>
         /// </list>
         /// </summary>
@@ -225,13 +225,13 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <returns> An async collection of <see cref="ClusterMetricsConfigurationResource" /> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<ClusterMetricsConfigurationResource> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            HttpMessage FirstPageRequest(int? pageSizeHint) => _clusterMetricsConfigurationMetricsConfigurationsRestClient.CreateListByResourceGroupRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name);
-            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _clusterMetricsConfigurationMetricsConfigurationsRestClient.CreateListByResourceGroupNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _clusterMetricsConfigurationMetricsConfigurationsRestClient.CreateListByClusterRequest(Guid.Parse(Id.Parent.Parent.Name), Id.Parent.Name, Id.Name);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _clusterMetricsConfigurationMetricsConfigurationsRestClient.CreateListByClusterNextPageRequest(nextLink, Guid.Parse(Id.Parent.Parent.Name), Id.Parent.Name, Id.Name);
             return PageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, e => new ClusterMetricsConfigurationResource(Client, ClusterMetricsConfigurationData.DeserializeClusterMetricsConfigurationData(e)), _clusterMetricsConfigurationMetricsConfigurationsClientDiagnostics, Pipeline, "ClusterMetricsConfigurationCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
-        /// Get a list of metrics configurations of the clusters in the provided resource group.
+        /// Get a list of metrics configurations for the provided cluster.
         /// <list type="bullet">
         /// <item>
         /// <term>Request Path</term>
@@ -239,7 +239,7 @@ namespace Azure.ResourceManager.NetworkCloud
         /// </item>
         /// <item>
         /// <term>Operation Id</term>
-        /// <description>MetricsConfigurations_ListByResourceGroup</description>
+        /// <description>MetricsConfigurations_ListByCluster</description>
         /// </item>
         /// </list>
         /// </summary>
@@ -247,8 +247,8 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <returns> A collection of <see cref="ClusterMetricsConfigurationResource" /> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<ClusterMetricsConfigurationResource> GetAll(CancellationToken cancellationToken = default)
         {
-            HttpMessage FirstPageRequest(int? pageSizeHint) => _clusterMetricsConfigurationMetricsConfigurationsRestClient.CreateListByResourceGroupRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name);
-            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _clusterMetricsConfigurationMetricsConfigurationsRestClient.CreateListByResourceGroupNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _clusterMetricsConfigurationMetricsConfigurationsRestClient.CreateListByClusterRequest(Guid.Parse(Id.Parent.Parent.Name), Id.Parent.Name, Id.Name);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _clusterMetricsConfigurationMetricsConfigurationsRestClient.CreateListByClusterNextPageRequest(nextLink, Guid.Parse(Id.Parent.Parent.Name), Id.Parent.Name, Id.Name);
             return PageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, e => new ClusterMetricsConfigurationResource(Client, ClusterMetricsConfigurationData.DeserializeClusterMetricsConfigurationData(e)), _clusterMetricsConfigurationMetricsConfigurationsClientDiagnostics, Pipeline, "ClusterMetricsConfigurationCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
@@ -277,7 +277,7 @@ namespace Azure.ResourceManager.NetworkCloud
             scope.Start();
             try
             {
-                var response = await _clusterMetricsConfigurationMetricsConfigurationsRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, metricsConfigurationName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                var response = await _clusterMetricsConfigurationMetricsConfigurationsRestClient.GetAsync(Guid.Parse(Id.Parent.Parent.Name), Id.Parent.Name, Id.Name, metricsConfigurationName, cancellationToken: cancellationToken).ConfigureAwait(false);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
             }
             catch (Exception e)
@@ -312,7 +312,7 @@ namespace Azure.ResourceManager.NetworkCloud
             scope.Start();
             try
             {
-                var response = _clusterMetricsConfigurationMetricsConfigurationsRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, metricsConfigurationName, cancellationToken: cancellationToken);
+                var response = _clusterMetricsConfigurationMetricsConfigurationsRestClient.Get(Guid.Parse(Id.Parent.Parent.Name), Id.Parent.Name, Id.Name, metricsConfigurationName, cancellationToken: cancellationToken);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
             }
             catch (Exception e)
