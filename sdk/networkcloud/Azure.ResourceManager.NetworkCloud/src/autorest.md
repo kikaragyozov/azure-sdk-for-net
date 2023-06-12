@@ -77,4 +77,3 @@ directive:
       - remove-operation: StorageAppliances_CreateOrUpdate
       - remove-operation: StorageAppliances_Delete
 ```
-
