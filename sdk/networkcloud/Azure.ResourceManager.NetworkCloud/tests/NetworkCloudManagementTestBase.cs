@@ -3,7 +3,6 @@
 
 using Azure.Core;
 using Azure.Core.TestFramework;
-using Azure.Core.TestFramework.Models;
 using Azure.ResourceManager.Resources;
 using Azure.ResourceManager.TestFramework;
 using NUnit.Framework;
@@ -14,32 +13,23 @@ namespace Azure.ResourceManager.NetworkCloud.Tests
     public class NetworkCloudManagementTestBase : ManagementRecordedTestBase<NetworkCloudManagementTestEnvironment>
     {
         protected ArmClient Client { get; private set; }
-        protected ResourceGroupResource ResourceGroupResource { get; private set; }
-        protected SubscriptionResource SubscriptionResource { get; private set; }
+        protected SubscriptionResource DefaultSubscription { get; private set; }
 
         protected NetworkCloudManagementTestBase(bool isAsync, RecordedTestMode mode)
         : base(isAsync, mode)
         {
-            BodyKeySanitizers.Add(new BodyKeySanitizer("fake-password123") { JsonPath = "properties.vmImageRepositoryCredentials.password" });
         }
 
         protected NetworkCloudManagementTestBase(bool isAsync)
             : base(isAsync)
         {
-            BodyKeySanitizers.Add(new BodyKeySanitizer("fake-password123") { JsonPath = "properties.vmImageRepositoryCredentials.password" });
         }
 
         [SetUp]
-        public async Task SetUp()
+        public async Task CreateCommonClient()
         {
             Client = GetArmClient();
-
-            var subscriptionId = SubscriptionResource.CreateResourceIdentifier(TestEnvironment.SubscriptionId);
-            SubscriptionResource = Client.GetSubscriptionResource(subscriptionId);
-            ResourceGroupResource = await CreateResourceGroup(SubscriptionResource, "networkcloud-sdk", TestEnvironment.Location);
-
-            TestContext.Out.WriteLine("using resource group: " + ResourceGroupResource.Id);
-            TestContext.Out.WriteLine("using subscription: " + SubscriptionResource.Id);
+            DefaultSubscription = await Client.GetDefaultSubscriptionAsync().ConfigureAwait(false);
         }
 
         protected async Task<ResourceGroupResource> CreateResourceGroup(SubscriptionResource subscription, string rgNamePrefix, AzureLocation location)

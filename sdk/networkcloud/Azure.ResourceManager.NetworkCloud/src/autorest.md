@@ -7,12 +7,41 @@ azure-arm: true
 csharp: true
 library-name: NetworkCloud
 namespace: Azure.ResourceManager.NetworkCloud
-require: https://github.com/Azure/azure-rest-api-specs/blob/7a92098c9b3cf46ec9158ae91dc8c5cdf87b6c12/specification/networkcloud/resource-manager/readme.md
+require: https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/networkcloud/resource-manager/readme.md
 output-folder: $(this-folder)/Generated
 clear-output-folder: true
 skip-csproj: true
 modelerfour:
   flatten-payloads: false
+
+directive:
+     - from: networkcloud.json
+       where: $.definitions
+       transform:
+         $.ClusterAvailableUpgradeVersion.properties.expectedDuration['x-ms-format'] = 'duration';
+     # The `password` is not required as it return null from service side
+     - from: networkcloud.json
+        where: $.definitions
+        transform:
+          $.AdministrativeCredentials.required =  [ "username" ]; 
+          $.ImageRepositoryCredentials.required = [
+            "username",
+            "registryUrl"
+          ];
+          $.ServicePrincipalInformation.required = [
+            "tenantId",
+            "principalId",
+            "applicationId"
+          ];
+      # `delete` transformations are to remove APIs/methods that result in Access Denied for end users.
+      - remove-operation: BareMetalMachines_CreateOrUpdate
+      - remove-operation: BareMetalMachines_Delete
+      - remove-operation: HybridAksClusters_CreateOrUpdate
+      - remove-operation: HybridAksClusters_Delete
+      - remove-operation: Racks_CreateOrUpdate
+      - remove-operation: Racks_Delete
+      - remove-operation: StorageAppliances_CreateOrUpdate
+      - remove-operation: StorageAppliances_Delete
 
 format-by-name-rules:
   'tenantId': 'uuid'
@@ -20,9 +49,6 @@ format-by-name-rules:
   'location': 'azure-location'
   '*Uri': 'Uri'
   '*Uris': 'Uri'
-
-rename-mapping:
-  ImageRepositoryCredentials.registryUrl: registryUriString
 
 rename-rules:
   CPU: Cpu
@@ -46,34 +72,5 @@ rename-rules:
   SSO: Sso
   URI: Uri
   Etag: ETag|etag
-
-directive:
-  - from: networkcloud.json
-    where: $.definitions
-    transform:
-      $.ClusterAvailableUpgradeVersion.properties.expectedDuration['x-ms-format'] = 'duration';
-  # The `password` is not required as it return null from service side
-  - from: networkcloud.json
-    where: $.definitions
-    transform:
-      $.AdministrativeCredentials.required =  [ 'username' ];
-      $.ImageRepositoryCredentials.required = [
-        'username',
-        'registryUrl'
-      ];
-      $.ServicePrincipalInformation.required = [
-        'tenantId',
-        'principalId',
-        'applicationId'
-      ];
-  # `delete` transformations are to remove APIs/methods that result in Access Denied for end users.
-  - remove-operation: BareMetalMachines_CreateOrUpdate
-  - remove-operation: BareMetalMachines_Delete
-  - remove-operation: HybridAksClusters_CreateOrUpdate
-  - remove-operation: HybridAksClusters_Delete
-  - remove-operation: Racks_CreateOrUpdate
-  - remove-operation: Racks_Delete
-  - remove-operation: StorageAppliances_CreateOrUpdate
-  - remove-operation: StorageAppliances_Delete
 
 ```

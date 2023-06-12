@@ -1,6 +1,6 @@
 # Microsoft Azure NetworkCloud management client library for .NET
 
-Microsoft Azure NetworkCloud provides management of the Azure Operator Nexus - Network Cloud resources including Cluster Managers, Operator on-premises clusters and their components, such as, racks, bare metal hosts, virtual machines, workload networks and more.
+**[Describe the service briefly first.]**
 
 This library follows the [new Azure SDK guidelines](https://azure.github.io/azure-sdk/general_introduction.html), and provides many core capabilities:
 
