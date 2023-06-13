@@ -13,6 +13,7 @@ using Azure.Identity;
 using Azure.ResourceManager;
 using Azure.ResourceManager.NetworkCloud;
 using Azure.ResourceManager.NetworkCloud.Models;
+using Azure.ResourceManager.Resources;
 
 namespace Azure.ResourceManager.NetworkCloud.Samples
 {
@@ -31,12 +32,14 @@ namespace Azure.ResourceManager.NetworkCloud.Samples
             // authenticate your client
             ArmClient client = new ArmClient(cred);
 
-            // this example assumes you already have this TenantResource created on azure
-            // for more information of creating TenantResource, please refer to the document of TenantResource
-            var tenantResource = client.GetTenants().GetAllAsync().GetAsyncEnumerator().Current;
+            // this example assumes you already have this SubscriptionResource created on azure
+            // for more information of creating SubscriptionResource, please refer to the document of SubscriptionResource
+            string subscriptionId = "123e4567-e89b-12d3-a456-426655440000";
+            ResourceIdentifier subscriptionResourceId = SubscriptionResource.CreateResourceIdentifier(subscriptionId);
+            SubscriptionResource subscriptionResource = client.GetSubscriptionResource(subscriptionResourceId);
 
             // invoke the operation and iterate over the result
-            await foreach (VolumeResource item in tenantResource.GetVolumesAsync())
+            await foreach (VolumeResource item in subscriptionResource.GetVolumesAsync())
             {
                 // the variable item is a resource, you could call other operations on this instance as well
                 // but just for demo, we get its data from this resource instance
@@ -63,7 +66,7 @@ namespace Azure.ResourceManager.NetworkCloud.Samples
 
             // this example assumes you already have this VolumeResource created on azure
             // for more information of creating VolumeResource, please refer to the document of VolumeResource
-            Guid subscriptionId = Guid.Parse("123e4567-e89b-12d3-a456-426655440000");
+            string subscriptionId = "123e4567-e89b-12d3-a456-426655440000";
             string resourceGroupName = "resourceGroupName";
             string volumeName = "volumeName";
             ResourceIdentifier volumeResourceId = VolumeResource.CreateResourceIdentifier(subscriptionId, resourceGroupName, volumeName);
@@ -94,7 +97,7 @@ namespace Azure.ResourceManager.NetworkCloud.Samples
 
             // this example assumes you already have this VolumeResource created on azure
             // for more information of creating VolumeResource, please refer to the document of VolumeResource
-            Guid subscriptionId = Guid.Parse("123e4567-e89b-12d3-a456-426655440000");
+            string subscriptionId = "123e4567-e89b-12d3-a456-426655440000";
             string resourceGroupName = "resourceGroupName";
             string volumeName = "volumeName";
             ResourceIdentifier volumeResourceId = VolumeResource.CreateResourceIdentifier(subscriptionId, resourceGroupName, volumeName);
@@ -121,7 +124,7 @@ namespace Azure.ResourceManager.NetworkCloud.Samples
 
             // this example assumes you already have this VolumeResource created on azure
             // for more information of creating VolumeResource, please refer to the document of VolumeResource
-            Guid subscriptionId = Guid.Parse("123e4567-e89b-12d3-a456-426655440000");
+            string subscriptionId = "123e4567-e89b-12d3-a456-426655440000";
             string resourceGroupName = "resourceGroupName";
             string volumeName = "volumeName";
             ResourceIdentifier volumeResourceId = VolumeResource.CreateResourceIdentifier(subscriptionId, resourceGroupName, volumeName);

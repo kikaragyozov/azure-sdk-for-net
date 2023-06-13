@@ -80,8 +80,8 @@ namespace Azure.ResourceManager.NetworkCloud
             scope.Start();
             try
             {
-                var response = await _bareMetalMachineKeySetRestClient.CreateOrUpdateAsync(Guid.Parse(Id.Parent.Parent.Name), Id.Parent.Name, Id.Name, bareMetalMachineKeySetName, data, cancellationToken).ConfigureAwait(false);
-                var operation = new NetworkCloudArmOperation<BareMetalMachineKeySetResource>(new BareMetalMachineKeySetOperationSource(Client), _bareMetalMachineKeySetClientDiagnostics, Pipeline, _bareMetalMachineKeySetRestClient.CreateCreateOrUpdateRequest(Guid.Parse(Id.Parent.Parent.Name), Id.Parent.Name, Id.Name, bareMetalMachineKeySetName, data).Request, response, OperationFinalStateVia.AzureAsyncOperation);
+                var response = await _bareMetalMachineKeySetRestClient.CreateOrUpdateAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, bareMetalMachineKeySetName, data, cancellationToken).ConfigureAwait(false);
+                var operation = new NetworkCloudArmOperation<BareMetalMachineKeySetResource>(new BareMetalMachineKeySetOperationSource(Client), _bareMetalMachineKeySetClientDiagnostics, Pipeline, _bareMetalMachineKeySetRestClient.CreateCreateOrUpdateRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, bareMetalMachineKeySetName, data).Request, response, OperationFinalStateVia.AzureAsyncOperation);
                 if (waitUntil == WaitUntil.Completed)
                     await operation.WaitForCompletionAsync(cancellationToken).ConfigureAwait(false);
                 return operation;
@@ -121,8 +121,8 @@ namespace Azure.ResourceManager.NetworkCloud
             scope.Start();
             try
             {
-                var response = _bareMetalMachineKeySetRestClient.CreateOrUpdate(Guid.Parse(Id.Parent.Parent.Name), Id.Parent.Name, Id.Name, bareMetalMachineKeySetName, data, cancellationToken);
-                var operation = new NetworkCloudArmOperation<BareMetalMachineKeySetResource>(new BareMetalMachineKeySetOperationSource(Client), _bareMetalMachineKeySetClientDiagnostics, Pipeline, _bareMetalMachineKeySetRestClient.CreateCreateOrUpdateRequest(Guid.Parse(Id.Parent.Parent.Name), Id.Parent.Name, Id.Name, bareMetalMachineKeySetName, data).Request, response, OperationFinalStateVia.AzureAsyncOperation);
+                var response = _bareMetalMachineKeySetRestClient.CreateOrUpdate(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, bareMetalMachineKeySetName, data, cancellationToken);
+                var operation = new NetworkCloudArmOperation<BareMetalMachineKeySetResource>(new BareMetalMachineKeySetOperationSource(Client), _bareMetalMachineKeySetClientDiagnostics, Pipeline, _bareMetalMachineKeySetRestClient.CreateCreateOrUpdateRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, bareMetalMachineKeySetName, data).Request, response, OperationFinalStateVia.AzureAsyncOperation);
                 if (waitUntil == WaitUntil.Completed)
                     operation.WaitForCompletion(cancellationToken);
                 return operation;
@@ -159,7 +159,7 @@ namespace Azure.ResourceManager.NetworkCloud
             scope.Start();
             try
             {
-                var response = await _bareMetalMachineKeySetRestClient.GetAsync(Guid.Parse(Id.Parent.Parent.Name), Id.Parent.Name, Id.Name, bareMetalMachineKeySetName, cancellationToken).ConfigureAwait(false);
+                var response = await _bareMetalMachineKeySetRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, bareMetalMachineKeySetName, cancellationToken).ConfigureAwait(false);
                 if (response.Value == null)
                     throw new RequestFailedException(response.GetRawResponse());
                 return Response.FromValue(new BareMetalMachineKeySetResource(Client, response.Value), response.GetRawResponse());
@@ -196,7 +196,7 @@ namespace Azure.ResourceManager.NetworkCloud
             scope.Start();
             try
             {
-                var response = _bareMetalMachineKeySetRestClient.Get(Guid.Parse(Id.Parent.Parent.Name), Id.Parent.Name, Id.Name, bareMetalMachineKeySetName, cancellationToken);
+                var response = _bareMetalMachineKeySetRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, bareMetalMachineKeySetName, cancellationToken);
                 if (response.Value == null)
                     throw new RequestFailedException(response.GetRawResponse());
                 return Response.FromValue(new BareMetalMachineKeySetResource(Client, response.Value), response.GetRawResponse());
@@ -225,8 +225,8 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <returns> An async collection of <see cref="BareMetalMachineKeySetResource" /> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<BareMetalMachineKeySetResource> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            HttpMessage FirstPageRequest(int? pageSizeHint) => _bareMetalMachineKeySetRestClient.CreateListByClusterRequest(Guid.Parse(Id.Parent.Parent.Name), Id.Parent.Name, Id.Name);
-            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _bareMetalMachineKeySetRestClient.CreateListByClusterNextPageRequest(nextLink, Guid.Parse(Id.Parent.Parent.Name), Id.Parent.Name, Id.Name);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _bareMetalMachineKeySetRestClient.CreateListByClusterRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _bareMetalMachineKeySetRestClient.CreateListByClusterNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name);
             return PageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, e => new BareMetalMachineKeySetResource(Client, BareMetalMachineKeySetData.DeserializeBareMetalMachineKeySetData(e)), _bareMetalMachineKeySetClientDiagnostics, Pipeline, "BareMetalMachineKeySetCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
@@ -247,8 +247,8 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <returns> A collection of <see cref="BareMetalMachineKeySetResource" /> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<BareMetalMachineKeySetResource> GetAll(CancellationToken cancellationToken = default)
         {
-            HttpMessage FirstPageRequest(int? pageSizeHint) => _bareMetalMachineKeySetRestClient.CreateListByClusterRequest(Guid.Parse(Id.Parent.Parent.Name), Id.Parent.Name, Id.Name);
-            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _bareMetalMachineKeySetRestClient.CreateListByClusterNextPageRequest(nextLink, Guid.Parse(Id.Parent.Parent.Name), Id.Parent.Name, Id.Name);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _bareMetalMachineKeySetRestClient.CreateListByClusterRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _bareMetalMachineKeySetRestClient.CreateListByClusterNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name);
             return PageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, e => new BareMetalMachineKeySetResource(Client, BareMetalMachineKeySetData.DeserializeBareMetalMachineKeySetData(e)), _bareMetalMachineKeySetClientDiagnostics, Pipeline, "BareMetalMachineKeySetCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
@@ -277,7 +277,7 @@ namespace Azure.ResourceManager.NetworkCloud
             scope.Start();
             try
             {
-                var response = await _bareMetalMachineKeySetRestClient.GetAsync(Guid.Parse(Id.Parent.Parent.Name), Id.Parent.Name, Id.Name, bareMetalMachineKeySetName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                var response = await _bareMetalMachineKeySetRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, bareMetalMachineKeySetName, cancellationToken: cancellationToken).ConfigureAwait(false);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
             }
             catch (Exception e)
@@ -312,7 +312,7 @@ namespace Azure.ResourceManager.NetworkCloud
             scope.Start();
             try
             {
-                var response = _bareMetalMachineKeySetRestClient.Get(Guid.Parse(Id.Parent.Parent.Name), Id.Parent.Name, Id.Name, bareMetalMachineKeySetName, cancellationToken: cancellationToken);
+                var response = _bareMetalMachineKeySetRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, bareMetalMachineKeySetName, cancellationToken: cancellationToken);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
             }
             catch (Exception e)

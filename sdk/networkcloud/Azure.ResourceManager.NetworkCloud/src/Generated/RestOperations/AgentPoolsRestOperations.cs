@@ -37,7 +37,7 @@ namespace Azure.ResourceManager.NetworkCloud
             _userAgent = new TelemetryDetails(GetType().Assembly, applicationId);
         }
 
-        internal HttpMessage CreateListByKubernetesClusterRequest(Guid subscriptionId, string resourceGroupName, string kubernetesClusterName)
+        internal HttpMessage CreateListByKubernetesClusterRequest(string subscriptionId, string resourceGroupName, string kubernetesClusterName)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -63,10 +63,11 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="kubernetesClusterName"> The name of the Kubernetes cluster. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> or <paramref name="kubernetesClusterName"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> or <paramref name="kubernetesClusterName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<AgentPoolList>> ListByKubernetesClusterAsync(Guid subscriptionId, string resourceGroupName, string kubernetesClusterName, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="kubernetesClusterName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="kubernetesClusterName"/> is an empty string, and was expected to be non-empty. </exception>
+        public async Task<Response<AgentPoolList>> ListByKubernetesClusterAsync(string subscriptionId, string resourceGroupName, string kubernetesClusterName, CancellationToken cancellationToken = default)
         {
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(kubernetesClusterName, nameof(kubernetesClusterName));
 
@@ -91,10 +92,11 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="kubernetesClusterName"> The name of the Kubernetes cluster. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> or <paramref name="kubernetesClusterName"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> or <paramref name="kubernetesClusterName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<AgentPoolList> ListByKubernetesCluster(Guid subscriptionId, string resourceGroupName, string kubernetesClusterName, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="kubernetesClusterName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="kubernetesClusterName"/> is an empty string, and was expected to be non-empty. </exception>
+        public Response<AgentPoolList> ListByKubernetesCluster(string subscriptionId, string resourceGroupName, string kubernetesClusterName, CancellationToken cancellationToken = default)
         {
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(kubernetesClusterName, nameof(kubernetesClusterName));
 
@@ -114,7 +116,7 @@ namespace Azure.ResourceManager.NetworkCloud
             }
         }
 
-        internal HttpMessage CreateGetRequest(Guid subscriptionId, string resourceGroupName, string kubernetesClusterName, string agentPoolName)
+        internal HttpMessage CreateGetRequest(string subscriptionId, string resourceGroupName, string kubernetesClusterName, string agentPoolName)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -142,10 +144,11 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <param name="kubernetesClusterName"> The name of the Kubernetes cluster. </param>
         /// <param name="agentPoolName"> The name of the Kubernetes cluster agent pool. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/>, <paramref name="kubernetesClusterName"/> or <paramref name="agentPoolName"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/>, <paramref name="kubernetesClusterName"/> or <paramref name="agentPoolName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<AgentPoolData>> GetAsync(Guid subscriptionId, string resourceGroupName, string kubernetesClusterName, string agentPoolName, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="kubernetesClusterName"/> or <paramref name="agentPoolName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="kubernetesClusterName"/> or <paramref name="agentPoolName"/> is an empty string, and was expected to be non-empty. </exception>
+        public async Task<Response<AgentPoolData>> GetAsync(string subscriptionId, string resourceGroupName, string kubernetesClusterName, string agentPoolName, CancellationToken cancellationToken = default)
         {
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(kubernetesClusterName, nameof(kubernetesClusterName));
             Argument.AssertNotNullOrEmpty(agentPoolName, nameof(agentPoolName));
@@ -174,10 +177,11 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <param name="kubernetesClusterName"> The name of the Kubernetes cluster. </param>
         /// <param name="agentPoolName"> The name of the Kubernetes cluster agent pool. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/>, <paramref name="kubernetesClusterName"/> or <paramref name="agentPoolName"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/>, <paramref name="kubernetesClusterName"/> or <paramref name="agentPoolName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<AgentPoolData> Get(Guid subscriptionId, string resourceGroupName, string kubernetesClusterName, string agentPoolName, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="kubernetesClusterName"/> or <paramref name="agentPoolName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="kubernetesClusterName"/> or <paramref name="agentPoolName"/> is an empty string, and was expected to be non-empty. </exception>
+        public Response<AgentPoolData> Get(string subscriptionId, string resourceGroupName, string kubernetesClusterName, string agentPoolName, CancellationToken cancellationToken = default)
         {
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(kubernetesClusterName, nameof(kubernetesClusterName));
             Argument.AssertNotNullOrEmpty(agentPoolName, nameof(agentPoolName));
@@ -200,7 +204,7 @@ namespace Azure.ResourceManager.NetworkCloud
             }
         }
 
-        internal HttpMessage CreateCreateOrUpdateRequest(Guid subscriptionId, string resourceGroupName, string kubernetesClusterName, string agentPoolName, AgentPoolData data)
+        internal HttpMessage CreateCreateOrUpdateRequest(string subscriptionId, string resourceGroupName, string kubernetesClusterName, string agentPoolName, AgentPoolData data)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -233,10 +237,11 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <param name="agentPoolName"> The name of the Kubernetes cluster agent pool. </param>
         /// <param name="data"> The request body. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/>, <paramref name="kubernetesClusterName"/>, <paramref name="agentPoolName"/> or <paramref name="data"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/>, <paramref name="kubernetesClusterName"/> or <paramref name="agentPoolName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response> CreateOrUpdateAsync(Guid subscriptionId, string resourceGroupName, string kubernetesClusterName, string agentPoolName, AgentPoolData data, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="kubernetesClusterName"/>, <paramref name="agentPoolName"/> or <paramref name="data"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="kubernetesClusterName"/> or <paramref name="agentPoolName"/> is an empty string, and was expected to be non-empty. </exception>
+        public async Task<Response> CreateOrUpdateAsync(string subscriptionId, string resourceGroupName, string kubernetesClusterName, string agentPoolName, AgentPoolData data, CancellationToken cancellationToken = default)
         {
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(kubernetesClusterName, nameof(kubernetesClusterName));
             Argument.AssertNotNullOrEmpty(agentPoolName, nameof(agentPoolName));
@@ -261,10 +266,11 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <param name="agentPoolName"> The name of the Kubernetes cluster agent pool. </param>
         /// <param name="data"> The request body. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/>, <paramref name="kubernetesClusterName"/>, <paramref name="agentPoolName"/> or <paramref name="data"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/>, <paramref name="kubernetesClusterName"/> or <paramref name="agentPoolName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response CreateOrUpdate(Guid subscriptionId, string resourceGroupName, string kubernetesClusterName, string agentPoolName, AgentPoolData data, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="kubernetesClusterName"/>, <paramref name="agentPoolName"/> or <paramref name="data"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="kubernetesClusterName"/> or <paramref name="agentPoolName"/> is an empty string, and was expected to be non-empty. </exception>
+        public Response CreateOrUpdate(string subscriptionId, string resourceGroupName, string kubernetesClusterName, string agentPoolName, AgentPoolData data, CancellationToken cancellationToken = default)
         {
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(kubernetesClusterName, nameof(kubernetesClusterName));
             Argument.AssertNotNullOrEmpty(agentPoolName, nameof(agentPoolName));
@@ -282,7 +288,7 @@ namespace Azure.ResourceManager.NetworkCloud
             }
         }
 
-        internal HttpMessage CreateDeleteRequest(Guid subscriptionId, string resourceGroupName, string kubernetesClusterName, string agentPoolName)
+        internal HttpMessage CreateDeleteRequest(string subscriptionId, string resourceGroupName, string kubernetesClusterName, string agentPoolName)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -310,10 +316,11 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <param name="kubernetesClusterName"> The name of the Kubernetes cluster. </param>
         /// <param name="agentPoolName"> The name of the Kubernetes cluster agent pool. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/>, <paramref name="kubernetesClusterName"/> or <paramref name="agentPoolName"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/>, <paramref name="kubernetesClusterName"/> or <paramref name="agentPoolName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response> DeleteAsync(Guid subscriptionId, string resourceGroupName, string kubernetesClusterName, string agentPoolName, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="kubernetesClusterName"/> or <paramref name="agentPoolName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="kubernetesClusterName"/> or <paramref name="agentPoolName"/> is an empty string, and was expected to be non-empty. </exception>
+        public async Task<Response> DeleteAsync(string subscriptionId, string resourceGroupName, string kubernetesClusterName, string agentPoolName, CancellationToken cancellationToken = default)
         {
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(kubernetesClusterName, nameof(kubernetesClusterName));
             Argument.AssertNotNullOrEmpty(agentPoolName, nameof(agentPoolName));
@@ -337,10 +344,11 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <param name="kubernetesClusterName"> The name of the Kubernetes cluster. </param>
         /// <param name="agentPoolName"> The name of the Kubernetes cluster agent pool. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/>, <paramref name="kubernetesClusterName"/> or <paramref name="agentPoolName"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/>, <paramref name="kubernetesClusterName"/> or <paramref name="agentPoolName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response Delete(Guid subscriptionId, string resourceGroupName, string kubernetesClusterName, string agentPoolName, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="kubernetesClusterName"/> or <paramref name="agentPoolName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="kubernetesClusterName"/> or <paramref name="agentPoolName"/> is an empty string, and was expected to be non-empty. </exception>
+        public Response Delete(string subscriptionId, string resourceGroupName, string kubernetesClusterName, string agentPoolName, CancellationToken cancellationToken = default)
         {
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(kubernetesClusterName, nameof(kubernetesClusterName));
             Argument.AssertNotNullOrEmpty(agentPoolName, nameof(agentPoolName));
@@ -358,7 +366,7 @@ namespace Azure.ResourceManager.NetworkCloud
             }
         }
 
-        internal HttpMessage CreateUpdateRequest(Guid subscriptionId, string resourceGroupName, string kubernetesClusterName, string agentPoolName, AgentPoolPatch patch)
+        internal HttpMessage CreateUpdateRequest(string subscriptionId, string resourceGroupName, string kubernetesClusterName, string agentPoolName, AgentPoolPatch patch)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -391,10 +399,11 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <param name="agentPoolName"> The name of the Kubernetes cluster agent pool. </param>
         /// <param name="patch"> The request body. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/>, <paramref name="kubernetesClusterName"/>, <paramref name="agentPoolName"/> or <paramref name="patch"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/>, <paramref name="kubernetesClusterName"/> or <paramref name="agentPoolName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response> UpdateAsync(Guid subscriptionId, string resourceGroupName, string kubernetesClusterName, string agentPoolName, AgentPoolPatch patch, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="kubernetesClusterName"/>, <paramref name="agentPoolName"/> or <paramref name="patch"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="kubernetesClusterName"/> or <paramref name="agentPoolName"/> is an empty string, and was expected to be non-empty. </exception>
+        public async Task<Response> UpdateAsync(string subscriptionId, string resourceGroupName, string kubernetesClusterName, string agentPoolName, AgentPoolPatch patch, CancellationToken cancellationToken = default)
         {
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(kubernetesClusterName, nameof(kubernetesClusterName));
             Argument.AssertNotNullOrEmpty(agentPoolName, nameof(agentPoolName));
@@ -419,10 +428,11 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <param name="agentPoolName"> The name of the Kubernetes cluster agent pool. </param>
         /// <param name="patch"> The request body. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/>, <paramref name="kubernetesClusterName"/>, <paramref name="agentPoolName"/> or <paramref name="patch"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/>, <paramref name="kubernetesClusterName"/> or <paramref name="agentPoolName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response Update(Guid subscriptionId, string resourceGroupName, string kubernetesClusterName, string agentPoolName, AgentPoolPatch patch, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="kubernetesClusterName"/>, <paramref name="agentPoolName"/> or <paramref name="patch"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="kubernetesClusterName"/> or <paramref name="agentPoolName"/> is an empty string, and was expected to be non-empty. </exception>
+        public Response Update(string subscriptionId, string resourceGroupName, string kubernetesClusterName, string agentPoolName, AgentPoolPatch patch, CancellationToken cancellationToken = default)
         {
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(kubernetesClusterName, nameof(kubernetesClusterName));
             Argument.AssertNotNullOrEmpty(agentPoolName, nameof(agentPoolName));
@@ -440,7 +450,7 @@ namespace Azure.ResourceManager.NetworkCloud
             }
         }
 
-        internal HttpMessage CreateListByKubernetesClusterNextPageRequest(string nextLink, Guid subscriptionId, string resourceGroupName, string kubernetesClusterName)
+        internal HttpMessage CreateListByKubernetesClusterNextPageRequest(string nextLink, string subscriptionId, string resourceGroupName, string kubernetesClusterName)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -460,11 +470,12 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="kubernetesClusterName"> The name of the Kubernetes cluster. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="resourceGroupName"/> or <paramref name="kubernetesClusterName"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> or <paramref name="kubernetesClusterName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<AgentPoolList>> ListByKubernetesClusterNextPageAsync(string nextLink, Guid subscriptionId, string resourceGroupName, string kubernetesClusterName, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="kubernetesClusterName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="kubernetesClusterName"/> is an empty string, and was expected to be non-empty. </exception>
+        public async Task<Response<AgentPoolList>> ListByKubernetesClusterNextPageAsync(string nextLink, string subscriptionId, string resourceGroupName, string kubernetesClusterName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(kubernetesClusterName, nameof(kubernetesClusterName));
 
@@ -490,11 +501,12 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="kubernetesClusterName"> The name of the Kubernetes cluster. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="resourceGroupName"/> or <paramref name="kubernetesClusterName"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> or <paramref name="kubernetesClusterName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<AgentPoolList> ListByKubernetesClusterNextPage(string nextLink, Guid subscriptionId, string resourceGroupName, string kubernetesClusterName, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="kubernetesClusterName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="kubernetesClusterName"/> is an empty string, and was expected to be non-empty. </exception>
+        public Response<AgentPoolList> ListByKubernetesClusterNextPage(string nextLink, string subscriptionId, string resourceGroupName, string kubernetesClusterName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(kubernetesClusterName, nameof(kubernetesClusterName));
 

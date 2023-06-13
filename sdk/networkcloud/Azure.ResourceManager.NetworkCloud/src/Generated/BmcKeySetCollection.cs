@@ -80,8 +80,8 @@ namespace Azure.ResourceManager.NetworkCloud
             scope.Start();
             try
             {
-                var response = await _bmcKeySetRestClient.CreateOrUpdateAsync(Guid.Parse(Id.Parent.Parent.Name), Id.Parent.Name, Id.Name, bmcKeySetName, data, cancellationToken).ConfigureAwait(false);
-                var operation = new NetworkCloudArmOperation<BmcKeySetResource>(new BmcKeySetOperationSource(Client), _bmcKeySetClientDiagnostics, Pipeline, _bmcKeySetRestClient.CreateCreateOrUpdateRequest(Guid.Parse(Id.Parent.Parent.Name), Id.Parent.Name, Id.Name, bmcKeySetName, data).Request, response, OperationFinalStateVia.AzureAsyncOperation);
+                var response = await _bmcKeySetRestClient.CreateOrUpdateAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, bmcKeySetName, data, cancellationToken).ConfigureAwait(false);
+                var operation = new NetworkCloudArmOperation<BmcKeySetResource>(new BmcKeySetOperationSource(Client), _bmcKeySetClientDiagnostics, Pipeline, _bmcKeySetRestClient.CreateCreateOrUpdateRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, bmcKeySetName, data).Request, response, OperationFinalStateVia.AzureAsyncOperation);
                 if (waitUntil == WaitUntil.Completed)
                     await operation.WaitForCompletionAsync(cancellationToken).ConfigureAwait(false);
                 return operation;
@@ -121,8 +121,8 @@ namespace Azure.ResourceManager.NetworkCloud
             scope.Start();
             try
             {
-                var response = _bmcKeySetRestClient.CreateOrUpdate(Guid.Parse(Id.Parent.Parent.Name), Id.Parent.Name, Id.Name, bmcKeySetName, data, cancellationToken);
-                var operation = new NetworkCloudArmOperation<BmcKeySetResource>(new BmcKeySetOperationSource(Client), _bmcKeySetClientDiagnostics, Pipeline, _bmcKeySetRestClient.CreateCreateOrUpdateRequest(Guid.Parse(Id.Parent.Parent.Name), Id.Parent.Name, Id.Name, bmcKeySetName, data).Request, response, OperationFinalStateVia.AzureAsyncOperation);
+                var response = _bmcKeySetRestClient.CreateOrUpdate(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, bmcKeySetName, data, cancellationToken);
+                var operation = new NetworkCloudArmOperation<BmcKeySetResource>(new BmcKeySetOperationSource(Client), _bmcKeySetClientDiagnostics, Pipeline, _bmcKeySetRestClient.CreateCreateOrUpdateRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, bmcKeySetName, data).Request, response, OperationFinalStateVia.AzureAsyncOperation);
                 if (waitUntil == WaitUntil.Completed)
                     operation.WaitForCompletion(cancellationToken);
                 return operation;
@@ -159,7 +159,7 @@ namespace Azure.ResourceManager.NetworkCloud
             scope.Start();
             try
             {
-                var response = await _bmcKeySetRestClient.GetAsync(Guid.Parse(Id.Parent.Parent.Name), Id.Parent.Name, Id.Name, bmcKeySetName, cancellationToken).ConfigureAwait(false);
+                var response = await _bmcKeySetRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, bmcKeySetName, cancellationToken).ConfigureAwait(false);
                 if (response.Value == null)
                     throw new RequestFailedException(response.GetRawResponse());
                 return Response.FromValue(new BmcKeySetResource(Client, response.Value), response.GetRawResponse());
@@ -196,7 +196,7 @@ namespace Azure.ResourceManager.NetworkCloud
             scope.Start();
             try
             {
-                var response = _bmcKeySetRestClient.Get(Guid.Parse(Id.Parent.Parent.Name), Id.Parent.Name, Id.Name, bmcKeySetName, cancellationToken);
+                var response = _bmcKeySetRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, bmcKeySetName, cancellationToken);
                 if (response.Value == null)
                     throw new RequestFailedException(response.GetRawResponse());
                 return Response.FromValue(new BmcKeySetResource(Client, response.Value), response.GetRawResponse());
@@ -225,8 +225,8 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <returns> An async collection of <see cref="BmcKeySetResource" /> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<BmcKeySetResource> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            HttpMessage FirstPageRequest(int? pageSizeHint) => _bmcKeySetRestClient.CreateListByClusterRequest(Guid.Parse(Id.Parent.Parent.Name), Id.Parent.Name, Id.Name);
-            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _bmcKeySetRestClient.CreateListByClusterNextPageRequest(nextLink, Guid.Parse(Id.Parent.Parent.Name), Id.Parent.Name, Id.Name);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _bmcKeySetRestClient.CreateListByClusterRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _bmcKeySetRestClient.CreateListByClusterNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name);
             return PageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, e => new BmcKeySetResource(Client, BmcKeySetData.DeserializeBmcKeySetData(e)), _bmcKeySetClientDiagnostics, Pipeline, "BmcKeySetCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
@@ -247,8 +247,8 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <returns> A collection of <see cref="BmcKeySetResource" /> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<BmcKeySetResource> GetAll(CancellationToken cancellationToken = default)
         {
-            HttpMessage FirstPageRequest(int? pageSizeHint) => _bmcKeySetRestClient.CreateListByClusterRequest(Guid.Parse(Id.Parent.Parent.Name), Id.Parent.Name, Id.Name);
-            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _bmcKeySetRestClient.CreateListByClusterNextPageRequest(nextLink, Guid.Parse(Id.Parent.Parent.Name), Id.Parent.Name, Id.Name);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _bmcKeySetRestClient.CreateListByClusterRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _bmcKeySetRestClient.CreateListByClusterNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name);
             return PageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, e => new BmcKeySetResource(Client, BmcKeySetData.DeserializeBmcKeySetData(e)), _bmcKeySetClientDiagnostics, Pipeline, "BmcKeySetCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
@@ -277,7 +277,7 @@ namespace Azure.ResourceManager.NetworkCloud
             scope.Start();
             try
             {
-                var response = await _bmcKeySetRestClient.GetAsync(Guid.Parse(Id.Parent.Parent.Name), Id.Parent.Name, Id.Name, bmcKeySetName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                var response = await _bmcKeySetRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, bmcKeySetName, cancellationToken: cancellationToken).ConfigureAwait(false);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
             }
             catch (Exception e)
@@ -312,7 +312,7 @@ namespace Azure.ResourceManager.NetworkCloud
             scope.Start();
             try
             {
-                var response = _bmcKeySetRestClient.Get(Guid.Parse(Id.Parent.Parent.Name), Id.Parent.Name, Id.Name, bmcKeySetName, cancellationToken: cancellationToken);
+                var response = _bmcKeySetRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, bmcKeySetName, cancellationToken: cancellationToken);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
             }
             catch (Exception e)

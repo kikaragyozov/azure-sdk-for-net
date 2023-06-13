@@ -33,7 +33,7 @@ namespace Azure.ResourceManager.NetworkCloud.Samples
 
             // this example assumes you already have this ClusterResource created on azure
             // for more information of creating ClusterResource, please refer to the document of ClusterResource
-            Guid subscriptionId = Guid.Parse("123e4567-e89b-12d3-a456-426655440000");
+            string subscriptionId = "123e4567-e89b-12d3-a456-426655440000";
             string resourceGroupName = "resourceGroupName";
             string clusterName = "clusterName";
             ResourceIdentifier clusterResourceId = ClusterResource.CreateResourceIdentifier(subscriptionId, resourceGroupName, clusterName);
@@ -70,7 +70,7 @@ namespace Azure.ResourceManager.NetworkCloud.Samples
 
             // this example assumes you already have this ClusterResource created on azure
             // for more information of creating ClusterResource, please refer to the document of ClusterResource
-            Guid subscriptionId = Guid.Parse("123e4567-e89b-12d3-a456-426655440000");
+            string subscriptionId = "123e4567-e89b-12d3-a456-426655440000";
             string resourceGroupName = "resourceGroupName";
             string clusterName = "clusterName";
             ResourceIdentifier clusterResourceId = ClusterResource.CreateResourceIdentifier(subscriptionId, resourceGroupName, clusterName);
@@ -105,7 +105,7 @@ namespace Azure.ResourceManager.NetworkCloud.Samples
 
             // this example assumes you already have this ClusterResource created on azure
             // for more information of creating ClusterResource, please refer to the document of ClusterResource
-            Guid subscriptionId = Guid.Parse("123e4567-e89b-12d3-a456-426655440000");
+            string subscriptionId = "123e4567-e89b-12d3-a456-426655440000";
             string resourceGroupName = "resourceGroupName";
             string clusterName = "clusterName";
             ResourceIdentifier clusterResourceId = ClusterResource.CreateResourceIdentifier(subscriptionId, resourceGroupName, clusterName);
@@ -136,7 +136,7 @@ namespace Azure.ResourceManager.NetworkCloud.Samples
 
             // this example assumes you already have this ClusterResource created on azure
             // for more information of creating ClusterResource, please refer to the document of ClusterResource
-            Guid subscriptionId = Guid.Parse("123e4567-e89b-12d3-a456-426655440000");
+            string subscriptionId = "123e4567-e89b-12d3-a456-426655440000";
             string resourceGroupName = "resourceGroupName";
             string clusterName = "clusterName";
             ResourceIdentifier clusterResourceId = ClusterResource.CreateResourceIdentifier(subscriptionId, resourceGroupName, clusterName);

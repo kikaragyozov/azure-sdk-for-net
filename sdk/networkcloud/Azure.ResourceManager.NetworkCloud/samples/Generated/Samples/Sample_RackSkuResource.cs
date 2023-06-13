@@ -31,7 +31,7 @@ namespace Azure.ResourceManager.NetworkCloud.Samples
 
             // this example assumes you already have this RackSkuResource created on azure
             // for more information of creating RackSkuResource, please refer to the document of RackSkuResource
-            Guid subscriptionId = Guid.Parse("123e4567-e89b-12d3-a456-426655440000");
+            string subscriptionId = "123e4567-e89b-12d3-a456-426655440000";
             string rackSkuName = "rackSkuName";
             ResourceIdentifier rackSkuResourceId = RackSkuResource.CreateResourceIdentifier(subscriptionId, rackSkuName);
             RackSkuResource rackSku = client.GetRackSkuResource(rackSkuResourceId);

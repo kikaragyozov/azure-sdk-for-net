@@ -48,6 +48,12 @@ rename-rules:
   Etag: ETag|etag
 
 directive:
+  # The core library Azure.ResourceManager has been generated when the subscriptionId was not marked as an uuid.
+  # v5 of common-types defines `subscriptionId` as `guid` format and needs to be removed in order to generate valid code.
+  - from: types.json
+    where: $.parameters.SubscriptionIdParameter
+    transform: >
+      delete $["format"];
   # explicitly define the expected format as duration
   - from: networkcloud.json
     where: $.definitions
@@ -76,5 +82,4 @@ directive:
   - remove-operation: Racks_Delete
   - remove-operation: StorageAppliances_CreateOrUpdate
   - remove-operation: StorageAppliances_Delete
-
 ```

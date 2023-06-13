@@ -21,15 +21,13 @@ namespace Azure.ResourceManager.NetworkCloud
 {
     /// <summary>
     /// A class representing a collection of <see cref="RackResource" /> and their operations.
-    /// Each <see cref="RackResource" /> in the collection will belong to the same instance of <see cref="TenantResource" />.
-    /// To get a <see cref="RackCollection" /> instance call the GetRacks method from an instance of <see cref="TenantResource" />.
+    /// Each <see cref="RackResource" /> in the collection will belong to the same instance of <see cref="ResourceGroupResource" />.
+    /// To get a <see cref="RackCollection" /> instance call the GetRacks method from an instance of <see cref="ResourceGroupResource" />.
     /// </summary>
     public partial class RackCollection : ArmCollection, IEnumerable<RackResource>, IAsyncEnumerable<RackResource>
     {
         private readonly ClientDiagnostics _rackClientDiagnostics;
         private readonly RacksRestOperations _rackRestClient;
-        private readonly Guid _subscriptionId;
-        private readonly string _resourceGroupName;
 
         /// <summary> Initializes a new instance of the <see cref="RackCollection"/> class for mocking. </summary>
         protected RackCollection()
@@ -39,14 +37,8 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <summary> Initializes a new instance of the <see cref="RackCollection"/> class. </summary>
         /// <param name="client"> The client parameters to use in these operations. </param>
         /// <param name="id"> The identifier of the parent resource that is the target of operations. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> is an empty string, and was expected to be non-empty. </exception>
-        internal RackCollection(ArmClient client, ResourceIdentifier id, Guid subscriptionId, string resourceGroupName) : base(client, id)
+        internal RackCollection(ArmClient client, ResourceIdentifier id) : base(client, id)
         {
-            _subscriptionId = subscriptionId;
-            _resourceGroupName = resourceGroupName;
             _rackClientDiagnostics = new ClientDiagnostics("Azure.ResourceManager.NetworkCloud", RackResource.ResourceType.Namespace, Diagnostics);
             TryGetApiVersion(RackResource.ResourceType, out string rackApiVersion);
             _rackRestClient = new RacksRestOperations(Pipeline, Diagnostics.ApplicationId, Endpoint, rackApiVersion);
@@ -57,8 +49,8 @@ namespace Azure.ResourceManager.NetworkCloud
 
         internal static void ValidateResourceId(ResourceIdentifier id)
         {
-            if (id.ResourceType != TenantResource.ResourceType)
-                throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Invalid resource type {0} expected {1}", id.ResourceType, TenantResource.ResourceType), nameof(id));
+            if (id.ResourceType != ResourceGroupResource.ResourceType)
+                throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Invalid resource type {0} expected {1}", id.ResourceType, ResourceGroupResource.ResourceType), nameof(id));
         }
 
         /// <summary>
@@ -86,7 +78,7 @@ namespace Azure.ResourceManager.NetworkCloud
             scope.Start();
             try
             {
-                var response = await _rackRestClient.GetAsync(Guid.Parse(_subscriptionId), _resourceGroupName, rackName, cancellationToken).ConfigureAwait(false);
+                var response = await _rackRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, rackName, cancellationToken).ConfigureAwait(false);
                 if (response.Value == null)
                     throw new RequestFailedException(response.GetRawResponse());
                 return Response.FromValue(new RackResource(Client, response.Value), response.GetRawResponse());
@@ -123,7 +115,7 @@ namespace Azure.ResourceManager.NetworkCloud
             scope.Start();
             try
             {
-                var response = _rackRestClient.Get(Guid.Parse(_subscriptionId), _resourceGroupName, rackName, cancellationToken);
+                var response = _rackRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, rackName, cancellationToken);
                 if (response.Value == null)
                     throw new RequestFailedException(response.GetRawResponse());
                 return Response.FromValue(new RackResource(Client, response.Value), response.GetRawResponse());
@@ -152,8 +144,8 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <returns> An async collection of <see cref="RackResource" /> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<RackResource> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            HttpMessage FirstPageRequest(int? pageSizeHint) => _rackRestClient.CreateListByResourceGroupRequest(Guid.Parse(_subscriptionId), _resourceGroupName);
-            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _rackRestClient.CreateListByResourceGroupNextPageRequest(nextLink, Guid.Parse(_subscriptionId), _resourceGroupName);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _rackRestClient.CreateListByResourceGroupRequest(Id.SubscriptionId, Id.ResourceGroupName);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _rackRestClient.CreateListByResourceGroupNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName);
             return PageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, e => new RackResource(Client, RackData.DeserializeRackData(e)), _rackClientDiagnostics, Pipeline, "RackCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
@@ -174,8 +166,8 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <returns> A collection of <see cref="RackResource" /> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<RackResource> GetAll(CancellationToken cancellationToken = default)
         {
-            HttpMessage FirstPageRequest(int? pageSizeHint) => _rackRestClient.CreateListByResourceGroupRequest(Guid.Parse(_subscriptionId), _resourceGroupName);
-            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _rackRestClient.CreateListByResourceGroupNextPageRequest(nextLink, Guid.Parse(_subscriptionId), _resourceGroupName);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _rackRestClient.CreateListByResourceGroupRequest(Id.SubscriptionId, Id.ResourceGroupName);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _rackRestClient.CreateListByResourceGroupNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName);
             return PageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, e => new RackResource(Client, RackData.DeserializeRackData(e)), _rackClientDiagnostics, Pipeline, "RackCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
@@ -204,7 +196,7 @@ namespace Azure.ResourceManager.NetworkCloud
             scope.Start();
             try
             {
-                var response = await _rackRestClient.GetAsync(Guid.Parse(_subscriptionId), _resourceGroupName, rackName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                var response = await _rackRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, rackName, cancellationToken: cancellationToken).ConfigureAwait(false);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
             }
             catch (Exception e)
@@ -239,7 +231,7 @@ namespace Azure.ResourceManager.NetworkCloud
             scope.Start();
             try
             {
-                var response = _rackRestClient.Get(Guid.Parse(_subscriptionId), _resourceGroupName, rackName, cancellationToken: cancellationToken);
+                var response = _rackRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, rackName, cancellationToken: cancellationToken);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
             }
             catch (Exception e)

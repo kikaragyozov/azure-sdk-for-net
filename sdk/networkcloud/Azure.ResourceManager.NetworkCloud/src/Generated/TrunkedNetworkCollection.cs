@@ -21,15 +21,13 @@ namespace Azure.ResourceManager.NetworkCloud
 {
     /// <summary>
     /// A class representing a collection of <see cref="TrunkedNetworkResource" /> and their operations.
-    /// Each <see cref="TrunkedNetworkResource" /> in the collection will belong to the same instance of <see cref="TenantResource" />.
-    /// To get a <see cref="TrunkedNetworkCollection" /> instance call the GetTrunkedNetworks method from an instance of <see cref="TenantResource" />.
+    /// Each <see cref="TrunkedNetworkResource" /> in the collection will belong to the same instance of <see cref="ResourceGroupResource" />.
+    /// To get a <see cref="TrunkedNetworkCollection" /> instance call the GetTrunkedNetworks method from an instance of <see cref="ResourceGroupResource" />.
     /// </summary>
     public partial class TrunkedNetworkCollection : ArmCollection, IEnumerable<TrunkedNetworkResource>, IAsyncEnumerable<TrunkedNetworkResource>
     {
         private readonly ClientDiagnostics _trunkedNetworkClientDiagnostics;
         private readonly TrunkedNetworksRestOperations _trunkedNetworkRestClient;
-        private readonly Guid _subscriptionId;
-        private readonly string _resourceGroupName;
 
         /// <summary> Initializes a new instance of the <see cref="TrunkedNetworkCollection"/> class for mocking. </summary>
         protected TrunkedNetworkCollection()
@@ -39,14 +37,8 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <summary> Initializes a new instance of the <see cref="TrunkedNetworkCollection"/> class. </summary>
         /// <param name="client"> The client parameters to use in these operations. </param>
         /// <param name="id"> The identifier of the parent resource that is the target of operations. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> is an empty string, and was expected to be non-empty. </exception>
-        internal TrunkedNetworkCollection(ArmClient client, ResourceIdentifier id, Guid subscriptionId, string resourceGroupName) : base(client, id)
+        internal TrunkedNetworkCollection(ArmClient client, ResourceIdentifier id) : base(client, id)
         {
-            _subscriptionId = subscriptionId;
-            _resourceGroupName = resourceGroupName;
             _trunkedNetworkClientDiagnostics = new ClientDiagnostics("Azure.ResourceManager.NetworkCloud", TrunkedNetworkResource.ResourceType.Namespace, Diagnostics);
             TryGetApiVersion(TrunkedNetworkResource.ResourceType, out string trunkedNetworkApiVersion);
             _trunkedNetworkRestClient = new TrunkedNetworksRestOperations(Pipeline, Diagnostics.ApplicationId, Endpoint, trunkedNetworkApiVersion);
@@ -57,8 +49,8 @@ namespace Azure.ResourceManager.NetworkCloud
 
         internal static void ValidateResourceId(ResourceIdentifier id)
         {
-            if (id.ResourceType != TenantResource.ResourceType)
-                throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Invalid resource type {0} expected {1}", id.ResourceType, TenantResource.ResourceType), nameof(id));
+            if (id.ResourceType != ResourceGroupResource.ResourceType)
+                throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Invalid resource type {0} expected {1}", id.ResourceType, ResourceGroupResource.ResourceType), nameof(id));
         }
 
         /// <summary>
@@ -89,8 +81,8 @@ namespace Azure.ResourceManager.NetworkCloud
             scope.Start();
             try
             {
-                var response = await _trunkedNetworkRestClient.CreateOrUpdateAsync(Guid.Parse(_subscriptionId), _resourceGroupName, trunkedNetworkName, data, cancellationToken).ConfigureAwait(false);
-                var operation = new NetworkCloudArmOperation<TrunkedNetworkResource>(new TrunkedNetworkOperationSource(Client), _trunkedNetworkClientDiagnostics, Pipeline, _trunkedNetworkRestClient.CreateCreateOrUpdateRequest(Guid.Parse(_subscriptionId), _resourceGroupName, trunkedNetworkName, data).Request, response, OperationFinalStateVia.AzureAsyncOperation);
+                var response = await _trunkedNetworkRestClient.CreateOrUpdateAsync(Id.SubscriptionId, Id.ResourceGroupName, trunkedNetworkName, data, cancellationToken).ConfigureAwait(false);
+                var operation = new NetworkCloudArmOperation<TrunkedNetworkResource>(new TrunkedNetworkOperationSource(Client), _trunkedNetworkClientDiagnostics, Pipeline, _trunkedNetworkRestClient.CreateCreateOrUpdateRequest(Id.SubscriptionId, Id.ResourceGroupName, trunkedNetworkName, data).Request, response, OperationFinalStateVia.AzureAsyncOperation);
                 if (waitUntil == WaitUntil.Completed)
                     await operation.WaitForCompletionAsync(cancellationToken).ConfigureAwait(false);
                 return operation;
@@ -130,8 +122,8 @@ namespace Azure.ResourceManager.NetworkCloud
             scope.Start();
             try
             {
-                var response = _trunkedNetworkRestClient.CreateOrUpdate(Guid.Parse(_subscriptionId), _resourceGroupName, trunkedNetworkName, data, cancellationToken);
-                var operation = new NetworkCloudArmOperation<TrunkedNetworkResource>(new TrunkedNetworkOperationSource(Client), _trunkedNetworkClientDiagnostics, Pipeline, _trunkedNetworkRestClient.CreateCreateOrUpdateRequest(Guid.Parse(_subscriptionId), _resourceGroupName, trunkedNetworkName, data).Request, response, OperationFinalStateVia.AzureAsyncOperation);
+                var response = _trunkedNetworkRestClient.CreateOrUpdate(Id.SubscriptionId, Id.ResourceGroupName, trunkedNetworkName, data, cancellationToken);
+                var operation = new NetworkCloudArmOperation<TrunkedNetworkResource>(new TrunkedNetworkOperationSource(Client), _trunkedNetworkClientDiagnostics, Pipeline, _trunkedNetworkRestClient.CreateCreateOrUpdateRequest(Id.SubscriptionId, Id.ResourceGroupName, trunkedNetworkName, data).Request, response, OperationFinalStateVia.AzureAsyncOperation);
                 if (waitUntil == WaitUntil.Completed)
                     operation.WaitForCompletion(cancellationToken);
                 return operation;
@@ -168,7 +160,7 @@ namespace Azure.ResourceManager.NetworkCloud
             scope.Start();
             try
             {
-                var response = await _trunkedNetworkRestClient.GetAsync(Guid.Parse(_subscriptionId), _resourceGroupName, trunkedNetworkName, cancellationToken).ConfigureAwait(false);
+                var response = await _trunkedNetworkRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, trunkedNetworkName, cancellationToken).ConfigureAwait(false);
                 if (response.Value == null)
                     throw new RequestFailedException(response.GetRawResponse());
                 return Response.FromValue(new TrunkedNetworkResource(Client, response.Value), response.GetRawResponse());
@@ -205,7 +197,7 @@ namespace Azure.ResourceManager.NetworkCloud
             scope.Start();
             try
             {
-                var response = _trunkedNetworkRestClient.Get(Guid.Parse(_subscriptionId), _resourceGroupName, trunkedNetworkName, cancellationToken);
+                var response = _trunkedNetworkRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, trunkedNetworkName, cancellationToken);
                 if (response.Value == null)
                     throw new RequestFailedException(response.GetRawResponse());
                 return Response.FromValue(new TrunkedNetworkResource(Client, response.Value), response.GetRawResponse());
@@ -234,8 +226,8 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <returns> An async collection of <see cref="TrunkedNetworkResource" /> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<TrunkedNetworkResource> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            HttpMessage FirstPageRequest(int? pageSizeHint) => _trunkedNetworkRestClient.CreateListByResourceGroupRequest(Guid.Parse(_subscriptionId), _resourceGroupName);
-            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _trunkedNetworkRestClient.CreateListByResourceGroupNextPageRequest(nextLink, Guid.Parse(_subscriptionId), _resourceGroupName);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _trunkedNetworkRestClient.CreateListByResourceGroupRequest(Id.SubscriptionId, Id.ResourceGroupName);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _trunkedNetworkRestClient.CreateListByResourceGroupNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName);
             return PageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, e => new TrunkedNetworkResource(Client, TrunkedNetworkData.DeserializeTrunkedNetworkData(e)), _trunkedNetworkClientDiagnostics, Pipeline, "TrunkedNetworkCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
@@ -256,8 +248,8 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <returns> A collection of <see cref="TrunkedNetworkResource" /> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<TrunkedNetworkResource> GetAll(CancellationToken cancellationToken = default)
         {
-            HttpMessage FirstPageRequest(int? pageSizeHint) => _trunkedNetworkRestClient.CreateListByResourceGroupRequest(Guid.Parse(_subscriptionId), _resourceGroupName);
-            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _trunkedNetworkRestClient.CreateListByResourceGroupNextPageRequest(nextLink, Guid.Parse(_subscriptionId), _resourceGroupName);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _trunkedNetworkRestClient.CreateListByResourceGroupRequest(Id.SubscriptionId, Id.ResourceGroupName);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _trunkedNetworkRestClient.CreateListByResourceGroupNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName);
             return PageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, e => new TrunkedNetworkResource(Client, TrunkedNetworkData.DeserializeTrunkedNetworkData(e)), _trunkedNetworkClientDiagnostics, Pipeline, "TrunkedNetworkCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
@@ -286,7 +278,7 @@ namespace Azure.ResourceManager.NetworkCloud
             scope.Start();
             try
             {
-                var response = await _trunkedNetworkRestClient.GetAsync(Guid.Parse(_subscriptionId), _resourceGroupName, trunkedNetworkName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                var response = await _trunkedNetworkRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, trunkedNetworkName, cancellationToken: cancellationToken).ConfigureAwait(false);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
             }
             catch (Exception e)
@@ -321,7 +313,7 @@ namespace Azure.ResourceManager.NetworkCloud
             scope.Start();
             try
             {
-                var response = _trunkedNetworkRestClient.Get(Guid.Parse(_subscriptionId), _resourceGroupName, trunkedNetworkName, cancellationToken: cancellationToken);
+                var response = _trunkedNetworkRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, trunkedNetworkName, cancellationToken: cancellationToken);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
             }
             catch (Exception e)

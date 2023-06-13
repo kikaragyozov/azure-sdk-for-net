@@ -21,15 +21,13 @@ namespace Azure.ResourceManager.NetworkCloud
 {
     /// <summary>
     /// A class representing a collection of <see cref="L3NetworkResource" /> and their operations.
-    /// Each <see cref="L3NetworkResource" /> in the collection will belong to the same instance of <see cref="TenantResource" />.
-    /// To get a <see cref="L3NetworkCollection" /> instance call the GetL3Networks method from an instance of <see cref="TenantResource" />.
+    /// Each <see cref="L3NetworkResource" /> in the collection will belong to the same instance of <see cref="ResourceGroupResource" />.
+    /// To get a <see cref="L3NetworkCollection" /> instance call the GetL3Networks method from an instance of <see cref="ResourceGroupResource" />.
     /// </summary>
     public partial class L3NetworkCollection : ArmCollection, IEnumerable<L3NetworkResource>, IAsyncEnumerable<L3NetworkResource>
     {
         private readonly ClientDiagnostics _l3NetworkClientDiagnostics;
         private readonly L3NetworksRestOperations _l3NetworkRestClient;
-        private readonly Guid _subscriptionId;
-        private readonly string _resourceGroupName;
 
         /// <summary> Initializes a new instance of the <see cref="L3NetworkCollection"/> class for mocking. </summary>
         protected L3NetworkCollection()
@@ -39,14 +37,8 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <summary> Initializes a new instance of the <see cref="L3NetworkCollection"/> class. </summary>
         /// <param name="client"> The client parameters to use in these operations. </param>
         /// <param name="id"> The identifier of the parent resource that is the target of operations. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> is an empty string, and was expected to be non-empty. </exception>
-        internal L3NetworkCollection(ArmClient client, ResourceIdentifier id, Guid subscriptionId, string resourceGroupName) : base(client, id)
+        internal L3NetworkCollection(ArmClient client, ResourceIdentifier id) : base(client, id)
         {
-            _subscriptionId = subscriptionId;
-            _resourceGroupName = resourceGroupName;
             _l3NetworkClientDiagnostics = new ClientDiagnostics("Azure.ResourceManager.NetworkCloud", L3NetworkResource.ResourceType.Namespace, Diagnostics);
             TryGetApiVersion(L3NetworkResource.ResourceType, out string l3NetworkApiVersion);
             _l3NetworkRestClient = new L3NetworksRestOperations(Pipeline, Diagnostics.ApplicationId, Endpoint, l3NetworkApiVersion);
@@ -57,8 +49,8 @@ namespace Azure.ResourceManager.NetworkCloud
 
         internal static void ValidateResourceId(ResourceIdentifier id)
         {
-            if (id.ResourceType != TenantResource.ResourceType)
-                throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Invalid resource type {0} expected {1}", id.ResourceType, TenantResource.ResourceType), nameof(id));
+            if (id.ResourceType != ResourceGroupResource.ResourceType)
+                throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Invalid resource type {0} expected {1}", id.ResourceType, ResourceGroupResource.ResourceType), nameof(id));
         }
 
         /// <summary>
@@ -89,8 +81,8 @@ namespace Azure.ResourceManager.NetworkCloud
             scope.Start();
             try
             {
-                var response = await _l3NetworkRestClient.CreateOrUpdateAsync(Guid.Parse(_subscriptionId), _resourceGroupName, l3NetworkName, data, cancellationToken).ConfigureAwait(false);
-                var operation = new NetworkCloudArmOperation<L3NetworkResource>(new L3NetworkOperationSource(Client), _l3NetworkClientDiagnostics, Pipeline, _l3NetworkRestClient.CreateCreateOrUpdateRequest(Guid.Parse(_subscriptionId), _resourceGroupName, l3NetworkName, data).Request, response, OperationFinalStateVia.AzureAsyncOperation);
+                var response = await _l3NetworkRestClient.CreateOrUpdateAsync(Id.SubscriptionId, Id.ResourceGroupName, l3NetworkName, data, cancellationToken).ConfigureAwait(false);
+                var operation = new NetworkCloudArmOperation<L3NetworkResource>(new L3NetworkOperationSource(Client), _l3NetworkClientDiagnostics, Pipeline, _l3NetworkRestClient.CreateCreateOrUpdateRequest(Id.SubscriptionId, Id.ResourceGroupName, l3NetworkName, data).Request, response, OperationFinalStateVia.AzureAsyncOperation);
                 if (waitUntil == WaitUntil.Completed)
                     await operation.WaitForCompletionAsync(cancellationToken).ConfigureAwait(false);
                 return operation;
@@ -130,8 +122,8 @@ namespace Azure.ResourceManager.NetworkCloud
             scope.Start();
             try
             {
-                var response = _l3NetworkRestClient.CreateOrUpdate(Guid.Parse(_subscriptionId), _resourceGroupName, l3NetworkName, data, cancellationToken);
-                var operation = new NetworkCloudArmOperation<L3NetworkResource>(new L3NetworkOperationSource(Client), _l3NetworkClientDiagnostics, Pipeline, _l3NetworkRestClient.CreateCreateOrUpdateRequest(Guid.Parse(_subscriptionId), _resourceGroupName, l3NetworkName, data).Request, response, OperationFinalStateVia.AzureAsyncOperation);
+                var response = _l3NetworkRestClient.CreateOrUpdate(Id.SubscriptionId, Id.ResourceGroupName, l3NetworkName, data, cancellationToken);
+                var operation = new NetworkCloudArmOperation<L3NetworkResource>(new L3NetworkOperationSource(Client), _l3NetworkClientDiagnostics, Pipeline, _l3NetworkRestClient.CreateCreateOrUpdateRequest(Id.SubscriptionId, Id.ResourceGroupName, l3NetworkName, data).Request, response, OperationFinalStateVia.AzureAsyncOperation);
                 if (waitUntil == WaitUntil.Completed)
                     operation.WaitForCompletion(cancellationToken);
                 return operation;
@@ -168,7 +160,7 @@ namespace Azure.ResourceManager.NetworkCloud
             scope.Start();
             try
             {
-                var response = await _l3NetworkRestClient.GetAsync(Guid.Parse(_subscriptionId), _resourceGroupName, l3NetworkName, cancellationToken).ConfigureAwait(false);
+                var response = await _l3NetworkRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, l3NetworkName, cancellationToken).ConfigureAwait(false);
                 if (response.Value == null)
                     throw new RequestFailedException(response.GetRawResponse());
                 return Response.FromValue(new L3NetworkResource(Client, response.Value), response.GetRawResponse());
@@ -205,7 +197,7 @@ namespace Azure.ResourceManager.NetworkCloud
             scope.Start();
             try
             {
-                var response = _l3NetworkRestClient.Get(Guid.Parse(_subscriptionId), _resourceGroupName, l3NetworkName, cancellationToken);
+                var response = _l3NetworkRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, l3NetworkName, cancellationToken);
                 if (response.Value == null)
                     throw new RequestFailedException(response.GetRawResponse());
                 return Response.FromValue(new L3NetworkResource(Client, response.Value), response.GetRawResponse());
@@ -234,8 +226,8 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <returns> An async collection of <see cref="L3NetworkResource" /> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<L3NetworkResource> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            HttpMessage FirstPageRequest(int? pageSizeHint) => _l3NetworkRestClient.CreateListByResourceGroupRequest(Guid.Parse(_subscriptionId), _resourceGroupName);
-            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _l3NetworkRestClient.CreateListByResourceGroupNextPageRequest(nextLink, Guid.Parse(_subscriptionId), _resourceGroupName);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _l3NetworkRestClient.CreateListByResourceGroupRequest(Id.SubscriptionId, Id.ResourceGroupName);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _l3NetworkRestClient.CreateListByResourceGroupNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName);
             return PageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, e => new L3NetworkResource(Client, L3NetworkData.DeserializeL3NetworkData(e)), _l3NetworkClientDiagnostics, Pipeline, "L3NetworkCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
@@ -256,8 +248,8 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <returns> A collection of <see cref="L3NetworkResource" /> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<L3NetworkResource> GetAll(CancellationToken cancellationToken = default)
         {
-            HttpMessage FirstPageRequest(int? pageSizeHint) => _l3NetworkRestClient.CreateListByResourceGroupRequest(Guid.Parse(_subscriptionId), _resourceGroupName);
-            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _l3NetworkRestClient.CreateListByResourceGroupNextPageRequest(nextLink, Guid.Parse(_subscriptionId), _resourceGroupName);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _l3NetworkRestClient.CreateListByResourceGroupRequest(Id.SubscriptionId, Id.ResourceGroupName);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _l3NetworkRestClient.CreateListByResourceGroupNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName);
             return PageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, e => new L3NetworkResource(Client, L3NetworkData.DeserializeL3NetworkData(e)), _l3NetworkClientDiagnostics, Pipeline, "L3NetworkCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
@@ -286,7 +278,7 @@ namespace Azure.ResourceManager.NetworkCloud
             scope.Start();
             try
             {
-                var response = await _l3NetworkRestClient.GetAsync(Guid.Parse(_subscriptionId), _resourceGroupName, l3NetworkName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                var response = await _l3NetworkRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, l3NetworkName, cancellationToken: cancellationToken).ConfigureAwait(false);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
             }
             catch (Exception e)
@@ -321,7 +313,7 @@ namespace Azure.ResourceManager.NetworkCloud
             scope.Start();
             try
             {
-                var response = _l3NetworkRestClient.Get(Guid.Parse(_subscriptionId), _resourceGroupName, l3NetworkName, cancellationToken: cancellationToken);
+                var response = _l3NetworkRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, l3NetworkName, cancellationToken: cancellationToken);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
             }
             catch (Exception e)

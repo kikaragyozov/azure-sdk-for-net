@@ -37,7 +37,7 @@ namespace Azure.ResourceManager.NetworkCloud
             _userAgent = new TelemetryDetails(GetType().Assembly, applicationId);
         }
 
-        internal HttpMessage CreateListBySubscriptionRequest(Guid subscriptionId)
+        internal HttpMessage CreateListBySubscriptionRequest(string subscriptionId)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -57,8 +57,12 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <summary> Get a list of bare metal machines in the provided subscription. </summary>
         /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        public async Task<Response<BareMetalMachineList>> ListBySubscriptionAsync(Guid subscriptionId, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/> is an empty string, and was expected to be non-empty. </exception>
+        public async Task<Response<BareMetalMachineList>> ListBySubscriptionAsync(string subscriptionId, CancellationToken cancellationToken = default)
         {
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+
             using var message = CreateListBySubscriptionRequest(subscriptionId);
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
             switch (message.Response.Status)
@@ -78,8 +82,12 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <summary> Get a list of bare metal machines in the provided subscription. </summary>
         /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        public Response<BareMetalMachineList> ListBySubscription(Guid subscriptionId, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/> is an empty string, and was expected to be non-empty. </exception>
+        public Response<BareMetalMachineList> ListBySubscription(string subscriptionId, CancellationToken cancellationToken = default)
         {
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+
             using var message = CreateListBySubscriptionRequest(subscriptionId);
             _pipeline.Send(message, cancellationToken);
             switch (message.Response.Status)
@@ -96,7 +104,7 @@ namespace Azure.ResourceManager.NetworkCloud
             }
         }
 
-        internal HttpMessage CreateListByResourceGroupRequest(Guid subscriptionId, string resourceGroupName)
+        internal HttpMessage CreateListByResourceGroupRequest(string subscriptionId, string resourceGroupName)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -119,10 +127,11 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<BareMetalMachineList>> ListByResourceGroupAsync(Guid subscriptionId, string resourceGroupName, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/> or <paramref name="resourceGroupName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/> or <paramref name="resourceGroupName"/> is an empty string, and was expected to be non-empty. </exception>
+        public async Task<Response<BareMetalMachineList>> ListByResourceGroupAsync(string subscriptionId, string resourceGroupName, CancellationToken cancellationToken = default)
         {
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
 
             using var message = CreateListByResourceGroupRequest(subscriptionId, resourceGroupName);
@@ -145,10 +154,11 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<BareMetalMachineList> ListByResourceGroup(Guid subscriptionId, string resourceGroupName, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/> or <paramref name="resourceGroupName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/> or <paramref name="resourceGroupName"/> is an empty string, and was expected to be non-empty. </exception>
+        public Response<BareMetalMachineList> ListByResourceGroup(string subscriptionId, string resourceGroupName, CancellationToken cancellationToken = default)
         {
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
 
             using var message = CreateListByResourceGroupRequest(subscriptionId, resourceGroupName);
@@ -167,7 +177,7 @@ namespace Azure.ResourceManager.NetworkCloud
             }
         }
 
-        internal HttpMessage CreateGetRequest(Guid subscriptionId, string resourceGroupName, string bareMetalMachineName)
+        internal HttpMessage CreateGetRequest(string subscriptionId, string resourceGroupName, string bareMetalMachineName)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -192,10 +202,11 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="bareMetalMachineName"> The name of the bare metal machine. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<BareMetalMachineData>> GetAsync(Guid subscriptionId, string resourceGroupName, string bareMetalMachineName, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
+        public async Task<Response<BareMetalMachineData>> GetAsync(string subscriptionId, string resourceGroupName, string bareMetalMachineName, CancellationToken cancellationToken = default)
         {
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(bareMetalMachineName, nameof(bareMetalMachineName));
 
@@ -222,10 +233,11 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="bareMetalMachineName"> The name of the bare metal machine. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<BareMetalMachineData> Get(Guid subscriptionId, string resourceGroupName, string bareMetalMachineName, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
+        public Response<BareMetalMachineData> Get(string subscriptionId, string resourceGroupName, string bareMetalMachineName, CancellationToken cancellationToken = default)
         {
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(bareMetalMachineName, nameof(bareMetalMachineName));
 
@@ -247,7 +259,7 @@ namespace Azure.ResourceManager.NetworkCloud
             }
         }
 
-        internal HttpMessage CreateUpdateRequest(Guid subscriptionId, string resourceGroupName, string bareMetalMachineName, BareMetalMachinePatch patch)
+        internal HttpMessage CreateUpdateRequest(string subscriptionId, string resourceGroupName, string bareMetalMachineName, BareMetalMachinePatch patch)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -277,10 +289,11 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <param name="bareMetalMachineName"> The name of the bare metal machine. </param>
         /// <param name="patch"> The request body. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/>, <paramref name="bareMetalMachineName"/> or <paramref name="patch"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response> UpdateAsync(Guid subscriptionId, string resourceGroupName, string bareMetalMachineName, BareMetalMachinePatch patch, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="bareMetalMachineName"/> or <paramref name="patch"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
+        public async Task<Response> UpdateAsync(string subscriptionId, string resourceGroupName, string bareMetalMachineName, BareMetalMachinePatch patch, CancellationToken cancellationToken = default)
         {
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(bareMetalMachineName, nameof(bareMetalMachineName));
             Argument.AssertNotNull(patch, nameof(patch));
@@ -303,10 +316,11 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <param name="bareMetalMachineName"> The name of the bare metal machine. </param>
         /// <param name="patch"> The request body. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/>, <paramref name="bareMetalMachineName"/> or <paramref name="patch"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response Update(Guid subscriptionId, string resourceGroupName, string bareMetalMachineName, BareMetalMachinePatch patch, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="bareMetalMachineName"/> or <paramref name="patch"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
+        public Response Update(string subscriptionId, string resourceGroupName, string bareMetalMachineName, BareMetalMachinePatch patch, CancellationToken cancellationToken = default)
         {
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(bareMetalMachineName, nameof(bareMetalMachineName));
             Argument.AssertNotNull(patch, nameof(patch));
@@ -323,7 +337,7 @@ namespace Azure.ResourceManager.NetworkCloud
             }
         }
 
-        internal HttpMessage CreateCordonRequest(Guid subscriptionId, string resourceGroupName, string bareMetalMachineName, BareMetalMachineCordonContent content)
+        internal HttpMessage CreateCordonRequest(string subscriptionId, string resourceGroupName, string bareMetalMachineName, BareMetalMachineCordonContent content)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -357,10 +371,11 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <param name="bareMetalMachineName"> The name of the bare metal machine. </param>
         /// <param name="content"> The request body. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response> CordonAsync(Guid subscriptionId, string resourceGroupName, string bareMetalMachineName, BareMetalMachineCordonContent content = null, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
+        public async Task<Response> CordonAsync(string subscriptionId, string resourceGroupName, string bareMetalMachineName, BareMetalMachineCordonContent content = null, CancellationToken cancellationToken = default)
         {
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(bareMetalMachineName, nameof(bareMetalMachineName));
 
@@ -382,10 +397,11 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <param name="bareMetalMachineName"> The name of the bare metal machine. </param>
         /// <param name="content"> The request body. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response Cordon(Guid subscriptionId, string resourceGroupName, string bareMetalMachineName, BareMetalMachineCordonContent content = null, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
+        public Response Cordon(string subscriptionId, string resourceGroupName, string bareMetalMachineName, BareMetalMachineCordonContent content = null, CancellationToken cancellationToken = default)
         {
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(bareMetalMachineName, nameof(bareMetalMachineName));
 
@@ -401,7 +417,7 @@ namespace Azure.ResourceManager.NetworkCloud
             }
         }
 
-        internal HttpMessage CreatePowerOffRequest(Guid subscriptionId, string resourceGroupName, string bareMetalMachineName, BareMetalMachinePowerOffContent content)
+        internal HttpMessage CreatePowerOffRequest(string subscriptionId, string resourceGroupName, string bareMetalMachineName, BareMetalMachinePowerOffContent content)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -435,10 +451,11 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <param name="bareMetalMachineName"> The name of the bare metal machine. </param>
         /// <param name="content"> The request body. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response> PowerOffAsync(Guid subscriptionId, string resourceGroupName, string bareMetalMachineName, BareMetalMachinePowerOffContent content = null, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
+        public async Task<Response> PowerOffAsync(string subscriptionId, string resourceGroupName, string bareMetalMachineName, BareMetalMachinePowerOffContent content = null, CancellationToken cancellationToken = default)
         {
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(bareMetalMachineName, nameof(bareMetalMachineName));
 
@@ -460,10 +477,11 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <param name="bareMetalMachineName"> The name of the bare metal machine. </param>
         /// <param name="content"> The request body. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response PowerOff(Guid subscriptionId, string resourceGroupName, string bareMetalMachineName, BareMetalMachinePowerOffContent content = null, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
+        public Response PowerOff(string subscriptionId, string resourceGroupName, string bareMetalMachineName, BareMetalMachinePowerOffContent content = null, CancellationToken cancellationToken = default)
         {
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(bareMetalMachineName, nameof(bareMetalMachineName));
 
@@ -479,7 +497,7 @@ namespace Azure.ResourceManager.NetworkCloud
             }
         }
 
-        internal HttpMessage CreateReimageRequest(Guid subscriptionId, string resourceGroupName, string bareMetalMachineName)
+        internal HttpMessage CreateReimageRequest(string subscriptionId, string resourceGroupName, string bareMetalMachineName)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -505,10 +523,11 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="bareMetalMachineName"> The name of the bare metal machine. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response> ReimageAsync(Guid subscriptionId, string resourceGroupName, string bareMetalMachineName, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
+        public async Task<Response> ReimageAsync(string subscriptionId, string resourceGroupName, string bareMetalMachineName, CancellationToken cancellationToken = default)
         {
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(bareMetalMachineName, nameof(bareMetalMachineName));
 
@@ -529,10 +548,11 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="bareMetalMachineName"> The name of the bare metal machine. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response Reimage(Guid subscriptionId, string resourceGroupName, string bareMetalMachineName, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
+        public Response Reimage(string subscriptionId, string resourceGroupName, string bareMetalMachineName, CancellationToken cancellationToken = default)
         {
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(bareMetalMachineName, nameof(bareMetalMachineName));
 
@@ -548,7 +568,7 @@ namespace Azure.ResourceManager.NetworkCloud
             }
         }
 
-        internal HttpMessage CreateReplaceRequest(Guid subscriptionId, string resourceGroupName, string bareMetalMachineName, BareMetalMachineReplaceContent content)
+        internal HttpMessage CreateReplaceRequest(string subscriptionId, string resourceGroupName, string bareMetalMachineName, BareMetalMachineReplaceContent content)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -582,10 +602,11 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <param name="bareMetalMachineName"> The name of the bare metal machine. </param>
         /// <param name="content"> The request body. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response> ReplaceAsync(Guid subscriptionId, string resourceGroupName, string bareMetalMachineName, BareMetalMachineReplaceContent content = null, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
+        public async Task<Response> ReplaceAsync(string subscriptionId, string resourceGroupName, string bareMetalMachineName, BareMetalMachineReplaceContent content = null, CancellationToken cancellationToken = default)
         {
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(bareMetalMachineName, nameof(bareMetalMachineName));
 
@@ -607,10 +628,11 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <param name="bareMetalMachineName"> The name of the bare metal machine. </param>
         /// <param name="content"> The request body. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response Replace(Guid subscriptionId, string resourceGroupName, string bareMetalMachineName, BareMetalMachineReplaceContent content = null, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
+        public Response Replace(string subscriptionId, string resourceGroupName, string bareMetalMachineName, BareMetalMachineReplaceContent content = null, CancellationToken cancellationToken = default)
         {
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(bareMetalMachineName, nameof(bareMetalMachineName));
 
@@ -626,7 +648,7 @@ namespace Azure.ResourceManager.NetworkCloud
             }
         }
 
-        internal HttpMessage CreateRestartRequest(Guid subscriptionId, string resourceGroupName, string bareMetalMachineName)
+        internal HttpMessage CreateRestartRequest(string subscriptionId, string resourceGroupName, string bareMetalMachineName)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -652,10 +674,11 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="bareMetalMachineName"> The name of the bare metal machine. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response> RestartAsync(Guid subscriptionId, string resourceGroupName, string bareMetalMachineName, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
+        public async Task<Response> RestartAsync(string subscriptionId, string resourceGroupName, string bareMetalMachineName, CancellationToken cancellationToken = default)
         {
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(bareMetalMachineName, nameof(bareMetalMachineName));
 
@@ -676,10 +699,11 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="bareMetalMachineName"> The name of the bare metal machine. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response Restart(Guid subscriptionId, string resourceGroupName, string bareMetalMachineName, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
+        public Response Restart(string subscriptionId, string resourceGroupName, string bareMetalMachineName, CancellationToken cancellationToken = default)
         {
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(bareMetalMachineName, nameof(bareMetalMachineName));
 
@@ -695,7 +719,7 @@ namespace Azure.ResourceManager.NetworkCloud
             }
         }
 
-        internal HttpMessage CreateRunCommandRequest(Guid subscriptionId, string resourceGroupName, string bareMetalMachineName, BareMetalMachineRunCommandContent content)
+        internal HttpMessage CreateRunCommandRequest(string subscriptionId, string resourceGroupName, string bareMetalMachineName, BareMetalMachineRunCommandContent content)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -726,10 +750,11 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <param name="bareMetalMachineName"> The name of the bare metal machine. </param>
         /// <param name="content"> The request body. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/>, <paramref name="bareMetalMachineName"/> or <paramref name="content"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response> RunCommandAsync(Guid subscriptionId, string resourceGroupName, string bareMetalMachineName, BareMetalMachineRunCommandContent content, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="bareMetalMachineName"/> or <paramref name="content"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
+        public async Task<Response> RunCommandAsync(string subscriptionId, string resourceGroupName, string bareMetalMachineName, BareMetalMachineRunCommandContent content, CancellationToken cancellationToken = default)
         {
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(bareMetalMachineName, nameof(bareMetalMachineName));
             Argument.AssertNotNull(content, nameof(content));
@@ -752,10 +777,11 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <param name="bareMetalMachineName"> The name of the bare metal machine. </param>
         /// <param name="content"> The request body. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/>, <paramref name="bareMetalMachineName"/> or <paramref name="content"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response RunCommand(Guid subscriptionId, string resourceGroupName, string bareMetalMachineName, BareMetalMachineRunCommandContent content, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="bareMetalMachineName"/> or <paramref name="content"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
+        public Response RunCommand(string subscriptionId, string resourceGroupName, string bareMetalMachineName, BareMetalMachineRunCommandContent content, CancellationToken cancellationToken = default)
         {
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(bareMetalMachineName, nameof(bareMetalMachineName));
             Argument.AssertNotNull(content, nameof(content));
@@ -772,7 +798,7 @@ namespace Azure.ResourceManager.NetworkCloud
             }
         }
 
-        internal HttpMessage CreateRunDataExtractsRequest(Guid subscriptionId, string resourceGroupName, string bareMetalMachineName, BareMetalMachineRunDataExtractsContent content)
+        internal HttpMessage CreateRunDataExtractsRequest(string subscriptionId, string resourceGroupName, string bareMetalMachineName, BareMetalMachineRunDataExtractsContent content)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -803,10 +829,11 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <param name="bareMetalMachineName"> The name of the bare metal machine. </param>
         /// <param name="content"> The request body. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/>, <paramref name="bareMetalMachineName"/> or <paramref name="content"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response> RunDataExtractsAsync(Guid subscriptionId, string resourceGroupName, string bareMetalMachineName, BareMetalMachineRunDataExtractsContent content, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="bareMetalMachineName"/> or <paramref name="content"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
+        public async Task<Response> RunDataExtractsAsync(string subscriptionId, string resourceGroupName, string bareMetalMachineName, BareMetalMachineRunDataExtractsContent content, CancellationToken cancellationToken = default)
         {
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(bareMetalMachineName, nameof(bareMetalMachineName));
             Argument.AssertNotNull(content, nameof(content));
@@ -829,10 +856,11 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <param name="bareMetalMachineName"> The name of the bare metal machine. </param>
         /// <param name="content"> The request body. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/>, <paramref name="bareMetalMachineName"/> or <paramref name="content"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response RunDataExtracts(Guid subscriptionId, string resourceGroupName, string bareMetalMachineName, BareMetalMachineRunDataExtractsContent content, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="bareMetalMachineName"/> or <paramref name="content"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
+        public Response RunDataExtracts(string subscriptionId, string resourceGroupName, string bareMetalMachineName, BareMetalMachineRunDataExtractsContent content, CancellationToken cancellationToken = default)
         {
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(bareMetalMachineName, nameof(bareMetalMachineName));
             Argument.AssertNotNull(content, nameof(content));
@@ -849,7 +877,7 @@ namespace Azure.ResourceManager.NetworkCloud
             }
         }
 
-        internal HttpMessage CreateRunReadCommandsRequest(Guid subscriptionId, string resourceGroupName, string bareMetalMachineName, BareMetalMachineRunReadCommandsContent content)
+        internal HttpMessage CreateRunReadCommandsRequest(string subscriptionId, string resourceGroupName, string bareMetalMachineName, BareMetalMachineRunReadCommandsContent content)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -880,10 +908,11 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <param name="bareMetalMachineName"> The name of the bare metal machine. </param>
         /// <param name="content"> The request body. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/>, <paramref name="bareMetalMachineName"/> or <paramref name="content"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response> RunReadCommandsAsync(Guid subscriptionId, string resourceGroupName, string bareMetalMachineName, BareMetalMachineRunReadCommandsContent content, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="bareMetalMachineName"/> or <paramref name="content"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
+        public async Task<Response> RunReadCommandsAsync(string subscriptionId, string resourceGroupName, string bareMetalMachineName, BareMetalMachineRunReadCommandsContent content, CancellationToken cancellationToken = default)
         {
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(bareMetalMachineName, nameof(bareMetalMachineName));
             Argument.AssertNotNull(content, nameof(content));
@@ -906,10 +935,11 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <param name="bareMetalMachineName"> The name of the bare metal machine. </param>
         /// <param name="content"> The request body. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/>, <paramref name="bareMetalMachineName"/> or <paramref name="content"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response RunReadCommands(Guid subscriptionId, string resourceGroupName, string bareMetalMachineName, BareMetalMachineRunReadCommandsContent content, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="bareMetalMachineName"/> or <paramref name="content"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
+        public Response RunReadCommands(string subscriptionId, string resourceGroupName, string bareMetalMachineName, BareMetalMachineRunReadCommandsContent content, CancellationToken cancellationToken = default)
         {
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(bareMetalMachineName, nameof(bareMetalMachineName));
             Argument.AssertNotNull(content, nameof(content));
@@ -926,7 +956,7 @@ namespace Azure.ResourceManager.NetworkCloud
             }
         }
 
-        internal HttpMessage CreateStartRequest(Guid subscriptionId, string resourceGroupName, string bareMetalMachineName)
+        internal HttpMessage CreateStartRequest(string subscriptionId, string resourceGroupName, string bareMetalMachineName)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -952,10 +982,11 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="bareMetalMachineName"> The name of the bare metal machine. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response> StartAsync(Guid subscriptionId, string resourceGroupName, string bareMetalMachineName, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
+        public async Task<Response> StartAsync(string subscriptionId, string resourceGroupName, string bareMetalMachineName, CancellationToken cancellationToken = default)
         {
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(bareMetalMachineName, nameof(bareMetalMachineName));
 
@@ -976,10 +1007,11 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="bareMetalMachineName"> The name of the bare metal machine. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response Start(Guid subscriptionId, string resourceGroupName, string bareMetalMachineName, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
+        public Response Start(string subscriptionId, string resourceGroupName, string bareMetalMachineName, CancellationToken cancellationToken = default)
         {
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(bareMetalMachineName, nameof(bareMetalMachineName));
 
@@ -995,7 +1027,7 @@ namespace Azure.ResourceManager.NetworkCloud
             }
         }
 
-        internal HttpMessage CreateUncordonRequest(Guid subscriptionId, string resourceGroupName, string bareMetalMachineName)
+        internal HttpMessage CreateUncordonRequest(string subscriptionId, string resourceGroupName, string bareMetalMachineName)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -1021,10 +1053,11 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="bareMetalMachineName"> The name of the bare metal machine. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response> UncordonAsync(Guid subscriptionId, string resourceGroupName, string bareMetalMachineName, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
+        public async Task<Response> UncordonAsync(string subscriptionId, string resourceGroupName, string bareMetalMachineName, CancellationToken cancellationToken = default)
         {
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(bareMetalMachineName, nameof(bareMetalMachineName));
 
@@ -1045,10 +1078,11 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="bareMetalMachineName"> The name of the bare metal machine. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response Uncordon(Guid subscriptionId, string resourceGroupName, string bareMetalMachineName, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
+        public Response Uncordon(string subscriptionId, string resourceGroupName, string bareMetalMachineName, CancellationToken cancellationToken = default)
         {
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(bareMetalMachineName, nameof(bareMetalMachineName));
 
@@ -1064,7 +1098,7 @@ namespace Azure.ResourceManager.NetworkCloud
             }
         }
 
-        internal HttpMessage CreateValidateHardwareRequest(Guid subscriptionId, string resourceGroupName, string bareMetalMachineName, BareMetalMachineValidateHardwareContent content)
+        internal HttpMessage CreateValidateHardwareRequest(string subscriptionId, string resourceGroupName, string bareMetalMachineName, BareMetalMachineValidateHardwareContent content)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -1095,10 +1129,11 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <param name="bareMetalMachineName"> The name of the bare metal machine. </param>
         /// <param name="content"> The request body. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/>, <paramref name="bareMetalMachineName"/> or <paramref name="content"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response> ValidateHardwareAsync(Guid subscriptionId, string resourceGroupName, string bareMetalMachineName, BareMetalMachineValidateHardwareContent content, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="bareMetalMachineName"/> or <paramref name="content"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
+        public async Task<Response> ValidateHardwareAsync(string subscriptionId, string resourceGroupName, string bareMetalMachineName, BareMetalMachineValidateHardwareContent content, CancellationToken cancellationToken = default)
         {
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(bareMetalMachineName, nameof(bareMetalMachineName));
             Argument.AssertNotNull(content, nameof(content));
@@ -1121,10 +1156,11 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <param name="bareMetalMachineName"> The name of the bare metal machine. </param>
         /// <param name="content"> The request body. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/>, <paramref name="bareMetalMachineName"/> or <paramref name="content"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response ValidateHardware(Guid subscriptionId, string resourceGroupName, string bareMetalMachineName, BareMetalMachineValidateHardwareContent content, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="bareMetalMachineName"/> or <paramref name="content"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
+        public Response ValidateHardware(string subscriptionId, string resourceGroupName, string bareMetalMachineName, BareMetalMachineValidateHardwareContent content, CancellationToken cancellationToken = default)
         {
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(bareMetalMachineName, nameof(bareMetalMachineName));
             Argument.AssertNotNull(content, nameof(content));
@@ -1141,7 +1177,7 @@ namespace Azure.ResourceManager.NetworkCloud
             }
         }
 
-        internal HttpMessage CreateListBySubscriptionNextPageRequest(string nextLink, Guid subscriptionId)
+        internal HttpMessage CreateListBySubscriptionNextPageRequest(string nextLink, string subscriptionId)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -1159,10 +1195,12 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <param name="nextLink"> The URL to the next page of results. </param>
         /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/> is null. </exception>
-        public async Task<Response<BareMetalMachineList>> ListBySubscriptionNextPageAsync(string nextLink, Guid subscriptionId, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/> or <paramref name="subscriptionId"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/> is an empty string, and was expected to be non-empty. </exception>
+        public async Task<Response<BareMetalMachineList>> ListBySubscriptionNextPageAsync(string nextLink, string subscriptionId, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
 
             using var message = CreateListBySubscriptionNextPageRequest(nextLink, subscriptionId);
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
@@ -1184,10 +1222,12 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <param name="nextLink"> The URL to the next page of results. </param>
         /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/> is null. </exception>
-        public Response<BareMetalMachineList> ListBySubscriptionNextPage(string nextLink, Guid subscriptionId, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/> or <paramref name="subscriptionId"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/> is an empty string, and was expected to be non-empty. </exception>
+        public Response<BareMetalMachineList> ListBySubscriptionNextPage(string nextLink, string subscriptionId, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
 
             using var message = CreateListBySubscriptionNextPageRequest(nextLink, subscriptionId);
             _pipeline.Send(message, cancellationToken);
@@ -1205,7 +1245,7 @@ namespace Azure.ResourceManager.NetworkCloud
             }
         }
 
-        internal HttpMessage CreateListByResourceGroupNextPageRequest(string nextLink, Guid subscriptionId, string resourceGroupName)
+        internal HttpMessage CreateListByResourceGroupNextPageRequest(string nextLink, string subscriptionId, string resourceGroupName)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -1224,11 +1264,12 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/> or <paramref name="resourceGroupName"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<BareMetalMachineList>> ListByResourceGroupNextPageAsync(string nextLink, Guid subscriptionId, string resourceGroupName, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="subscriptionId"/> or <paramref name="resourceGroupName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/> or <paramref name="resourceGroupName"/> is an empty string, and was expected to be non-empty. </exception>
+        public async Task<Response<BareMetalMachineList>> ListByResourceGroupNextPageAsync(string nextLink, string subscriptionId, string resourceGroupName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
 
             using var message = CreateListByResourceGroupNextPageRequest(nextLink, subscriptionId, resourceGroupName);
@@ -1252,11 +1293,12 @@ namespace Azure.ResourceManager.NetworkCloud
         /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/> or <paramref name="resourceGroupName"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<BareMetalMachineList> ListByResourceGroupNextPage(string nextLink, Guid subscriptionId, string resourceGroupName, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="subscriptionId"/> or <paramref name="resourceGroupName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/> or <paramref name="resourceGroupName"/> is an empty string, and was expected to be non-empty. </exception>
+        public Response<BareMetalMachineList> ListByResourceGroupNextPage(string nextLink, string subscriptionId, string resourceGroupName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
 
             using var message = CreateListByResourceGroupNextPageRequest(nextLink, subscriptionId, resourceGroupName);

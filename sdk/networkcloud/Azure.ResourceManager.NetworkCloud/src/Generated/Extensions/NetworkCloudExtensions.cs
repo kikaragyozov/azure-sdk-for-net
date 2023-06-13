@@ -18,19 +18,35 @@ namespace Azure.ResourceManager.NetworkCloud
     /// <summary> A class to add extension methods to Azure.ResourceManager.NetworkCloud. </summary>
     public static partial class NetworkCloudExtensions
     {
-        private static TenantResourceExtensionClient GetTenantResourceExtensionClient(ArmResource resource)
+        private static ResourceGroupResourceExtensionClient GetResourceGroupResourceExtensionClient(ArmResource resource)
         {
             return resource.GetCachedClient(client =>
             {
-                return new TenantResourceExtensionClient(client, resource.Id);
+                return new ResourceGroupResourceExtensionClient(client, resource.Id);
             });
         }
 
-        private static TenantResourceExtensionClient GetTenantResourceExtensionClient(ArmClient client, ResourceIdentifier scope)
+        private static ResourceGroupResourceExtensionClient GetResourceGroupResourceExtensionClient(ArmClient client, ResourceIdentifier scope)
         {
             return client.GetResourceClient(() =>
             {
-                return new TenantResourceExtensionClient(client, scope);
+                return new ResourceGroupResourceExtensionClient(client, scope);
+            });
+        }
+
+        private static SubscriptionResourceExtensionClient GetSubscriptionResourceExtensionClient(ArmResource resource)
+        {
+            return resource.GetCachedClient(client =>
+            {
+                return new SubscriptionResourceExtensionClient(client, resource.Id);
+            });
+        }
+
+        private static SubscriptionResourceExtensionClient GetSubscriptionResourceExtensionClient(ArmClient client, ResourceIdentifier scope)
+        {
+            return client.GetResourceClient(() =>
+            {
+                return new SubscriptionResourceExtensionClient(client, scope);
             });
         }
         #region BareMetalMachineResource
@@ -375,18 +391,12 @@ namespace Azure.ResourceManager.NetworkCloud
         }
         #endregion
 
-        /// <summary> Gets a collection of BareMetalMachineResources in the TenantResource. </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> is null. </exception>
+        /// <summary> Gets a collection of BareMetalMachineResources in the ResourceGroupResource. </summary>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
         /// <returns> An object representing collection of BareMetalMachineResources and their operations over a BareMetalMachineResource. </returns>
-        public static BareMetalMachineCollection GetBareMetalMachines(this TenantResource tenantResource, Guid subscriptionId, string resourceGroupName)
+        public static BareMetalMachineCollection GetBareMetalMachines(this ResourceGroupResource resourceGroupResource)
         {
-            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-
-            return GetTenantResourceExtensionClient(tenantResource).GetBareMetalMachines(subscriptionId, resourceGroupName);
+            return GetResourceGroupResourceExtensionClient(resourceGroupResource).GetBareMetalMachines();
         }
 
         /// <summary>
@@ -402,17 +412,15 @@ namespace Azure.ResourceManager.NetworkCloud
         /// </item>
         /// </list>
         /// </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
         /// <param name="bareMetalMachineName"> The name of the bare metal machine. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="bareMetalMachineName"/> is null. </exception>
         [ForwardsClientCalls]
-        public static async Task<Response<BareMetalMachineResource>> GetBareMetalMachineAsync(this TenantResource tenantResource, Guid subscriptionId, string resourceGroupName, string bareMetalMachineName, CancellationToken cancellationToken = default)
+        public static async Task<Response<BareMetalMachineResource>> GetBareMetalMachineAsync(this ResourceGroupResource resourceGroupResource, string bareMetalMachineName, CancellationToken cancellationToken = default)
         {
-            return await tenantResource.GetBareMetalMachines(subscriptionId, resourceGroupName).GetAsync(bareMetalMachineName, cancellationToken).ConfigureAwait(false);
+            return await resourceGroupResource.GetBareMetalMachines().GetAsync(bareMetalMachineName, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -428,31 +436,23 @@ namespace Azure.ResourceManager.NetworkCloud
         /// </item>
         /// </list>
         /// </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
         /// <param name="bareMetalMachineName"> The name of the bare metal machine. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> or <paramref name="bareMetalMachineName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="bareMetalMachineName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="bareMetalMachineName"/> is null. </exception>
         [ForwardsClientCalls]
-        public static Response<BareMetalMachineResource> GetBareMetalMachine(this TenantResource tenantResource, Guid subscriptionId, string resourceGroupName, string bareMetalMachineName, CancellationToken cancellationToken = default)
+        public static Response<BareMetalMachineResource> GetBareMetalMachine(this ResourceGroupResource resourceGroupResource, string bareMetalMachineName, CancellationToken cancellationToken = default)
         {
-            return tenantResource.GetBareMetalMachines(subscriptionId, resourceGroupName).Get(bareMetalMachineName, cancellationToken);
+            return resourceGroupResource.GetBareMetalMachines().Get(bareMetalMachineName, cancellationToken);
         }
 
-        /// <summary> Gets a collection of CloudServicesNetworkResources in the TenantResource. </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> is null. </exception>
+        /// <summary> Gets a collection of CloudServicesNetworkResources in the ResourceGroupResource. </summary>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
         /// <returns> An object representing collection of CloudServicesNetworkResources and their operations over a CloudServicesNetworkResource. </returns>
-        public static CloudServicesNetworkCollection GetCloudServicesNetworks(this TenantResource tenantResource, Guid subscriptionId, string resourceGroupName)
+        public static CloudServicesNetworkCollection GetCloudServicesNetworks(this ResourceGroupResource resourceGroupResource)
         {
-            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-
-            return GetTenantResourceExtensionClient(tenantResource).GetCloudServicesNetworks(subscriptionId, resourceGroupName);
+            return GetResourceGroupResourceExtensionClient(resourceGroupResource).GetCloudServicesNetworks();
         }
 
         /// <summary>
@@ -468,17 +468,15 @@ namespace Azure.ResourceManager.NetworkCloud
         /// </item>
         /// </list>
         /// </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
         /// <param name="cloudServicesNetworkName"> The name of the cloud services network. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> or <paramref name="cloudServicesNetworkName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> or <paramref name="cloudServicesNetworkName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="cloudServicesNetworkName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="cloudServicesNetworkName"/> is null. </exception>
         [ForwardsClientCalls]
-        public static async Task<Response<CloudServicesNetworkResource>> GetCloudServicesNetworkAsync(this TenantResource tenantResource, Guid subscriptionId, string resourceGroupName, string cloudServicesNetworkName, CancellationToken cancellationToken = default)
+        public static async Task<Response<CloudServicesNetworkResource>> GetCloudServicesNetworkAsync(this ResourceGroupResource resourceGroupResource, string cloudServicesNetworkName, CancellationToken cancellationToken = default)
         {
-            return await tenantResource.GetCloudServicesNetworks(subscriptionId, resourceGroupName).GetAsync(cloudServicesNetworkName, cancellationToken).ConfigureAwait(false);
+            return await resourceGroupResource.GetCloudServicesNetworks().GetAsync(cloudServicesNetworkName, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -494,31 +492,23 @@ namespace Azure.ResourceManager.NetworkCloud
         /// </item>
         /// </list>
         /// </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
         /// <param name="cloudServicesNetworkName"> The name of the cloud services network. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> or <paramref name="cloudServicesNetworkName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> or <paramref name="cloudServicesNetworkName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="cloudServicesNetworkName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="cloudServicesNetworkName"/> is null. </exception>
         [ForwardsClientCalls]
-        public static Response<CloudServicesNetworkResource> GetCloudServicesNetwork(this TenantResource tenantResource, Guid subscriptionId, string resourceGroupName, string cloudServicesNetworkName, CancellationToken cancellationToken = default)
+        public static Response<CloudServicesNetworkResource> GetCloudServicesNetwork(this ResourceGroupResource resourceGroupResource, string cloudServicesNetworkName, CancellationToken cancellationToken = default)
         {
-            return tenantResource.GetCloudServicesNetworks(subscriptionId, resourceGroupName).Get(cloudServicesNetworkName, cancellationToken);
+            return resourceGroupResource.GetCloudServicesNetworks().Get(cloudServicesNetworkName, cancellationToken);
         }
 
-        /// <summary> Gets a collection of ClusterManagerResources in the TenantResource. </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> is null. </exception>
+        /// <summary> Gets a collection of ClusterManagerResources in the ResourceGroupResource. </summary>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
         /// <returns> An object representing collection of ClusterManagerResources and their operations over a ClusterManagerResource. </returns>
-        public static ClusterManagerCollection GetClusterManagers(this TenantResource tenantResource, Guid subscriptionId, string resourceGroupName)
+        public static ClusterManagerCollection GetClusterManagers(this ResourceGroupResource resourceGroupResource)
         {
-            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-
-            return GetTenantResourceExtensionClient(tenantResource).GetClusterManagers(subscriptionId, resourceGroupName);
+            return GetResourceGroupResourceExtensionClient(resourceGroupResource).GetClusterManagers();
         }
 
         /// <summary>
@@ -534,17 +524,15 @@ namespace Azure.ResourceManager.NetworkCloud
         /// </item>
         /// </list>
         /// </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
         /// <param name="clusterManagerName"> The name of the cluster manager. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> or <paramref name="clusterManagerName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> or <paramref name="clusterManagerName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="clusterManagerName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="clusterManagerName"/> is null. </exception>
         [ForwardsClientCalls]
-        public static async Task<Response<ClusterManagerResource>> GetClusterManagerAsync(this TenantResource tenantResource, Guid subscriptionId, string resourceGroupName, string clusterManagerName, CancellationToken cancellationToken = default)
+        public static async Task<Response<ClusterManagerResource>> GetClusterManagerAsync(this ResourceGroupResource resourceGroupResource, string clusterManagerName, CancellationToken cancellationToken = default)
         {
-            return await tenantResource.GetClusterManagers(subscriptionId, resourceGroupName).GetAsync(clusterManagerName, cancellationToken).ConfigureAwait(false);
+            return await resourceGroupResource.GetClusterManagers().GetAsync(clusterManagerName, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -560,31 +548,23 @@ namespace Azure.ResourceManager.NetworkCloud
         /// </item>
         /// </list>
         /// </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
         /// <param name="clusterManagerName"> The name of the cluster manager. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> or <paramref name="clusterManagerName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> or <paramref name="clusterManagerName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="clusterManagerName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="clusterManagerName"/> is null. </exception>
         [ForwardsClientCalls]
-        public static Response<ClusterManagerResource> GetClusterManager(this TenantResource tenantResource, Guid subscriptionId, string resourceGroupName, string clusterManagerName, CancellationToken cancellationToken = default)
+        public static Response<ClusterManagerResource> GetClusterManager(this ResourceGroupResource resourceGroupResource, string clusterManagerName, CancellationToken cancellationToken = default)
         {
-            return tenantResource.GetClusterManagers(subscriptionId, resourceGroupName).Get(clusterManagerName, cancellationToken);
+            return resourceGroupResource.GetClusterManagers().Get(clusterManagerName, cancellationToken);
         }
 
-        /// <summary> Gets a collection of ClusterResources in the TenantResource. </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> is null. </exception>
+        /// <summary> Gets a collection of ClusterResources in the ResourceGroupResource. </summary>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
         /// <returns> An object representing collection of ClusterResources and their operations over a ClusterResource. </returns>
-        public static ClusterCollection GetClusters(this TenantResource tenantResource, Guid subscriptionId, string resourceGroupName)
+        public static ClusterCollection GetClusters(this ResourceGroupResource resourceGroupResource)
         {
-            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-
-            return GetTenantResourceExtensionClient(tenantResource).GetClusters(subscriptionId, resourceGroupName);
+            return GetResourceGroupResourceExtensionClient(resourceGroupResource).GetClusters();
         }
 
         /// <summary>
@@ -600,17 +580,15 @@ namespace Azure.ResourceManager.NetworkCloud
         /// </item>
         /// </list>
         /// </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
         /// <param name="clusterName"> The name of the cluster. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> or <paramref name="clusterName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> or <paramref name="clusterName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="clusterName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="clusterName"/> is null. </exception>
         [ForwardsClientCalls]
-        public static async Task<Response<ClusterResource>> GetClusterAsync(this TenantResource tenantResource, Guid subscriptionId, string resourceGroupName, string clusterName, CancellationToken cancellationToken = default)
+        public static async Task<Response<ClusterResource>> GetClusterAsync(this ResourceGroupResource resourceGroupResource, string clusterName, CancellationToken cancellationToken = default)
         {
-            return await tenantResource.GetClusters(subscriptionId, resourceGroupName).GetAsync(clusterName, cancellationToken).ConfigureAwait(false);
+            return await resourceGroupResource.GetClusters().GetAsync(clusterName, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -626,31 +604,23 @@ namespace Azure.ResourceManager.NetworkCloud
         /// </item>
         /// </list>
         /// </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
         /// <param name="clusterName"> The name of the cluster. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> or <paramref name="clusterName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> or <paramref name="clusterName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="clusterName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="clusterName"/> is null. </exception>
         [ForwardsClientCalls]
-        public static Response<ClusterResource> GetCluster(this TenantResource tenantResource, Guid subscriptionId, string resourceGroupName, string clusterName, CancellationToken cancellationToken = default)
+        public static Response<ClusterResource> GetCluster(this ResourceGroupResource resourceGroupResource, string clusterName, CancellationToken cancellationToken = default)
         {
-            return tenantResource.GetClusters(subscriptionId, resourceGroupName).Get(clusterName, cancellationToken);
+            return resourceGroupResource.GetClusters().Get(clusterName, cancellationToken);
         }
 
-        /// <summary> Gets a collection of KubernetesClusterResources in the TenantResource. </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> is null. </exception>
+        /// <summary> Gets a collection of KubernetesClusterResources in the ResourceGroupResource. </summary>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
         /// <returns> An object representing collection of KubernetesClusterResources and their operations over a KubernetesClusterResource. </returns>
-        public static KubernetesClusterCollection GetKubernetesClusters(this TenantResource tenantResource, Guid subscriptionId, string resourceGroupName)
+        public static KubernetesClusterCollection GetKubernetesClusters(this ResourceGroupResource resourceGroupResource)
         {
-            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-
-            return GetTenantResourceExtensionClient(tenantResource).GetKubernetesClusters(subscriptionId, resourceGroupName);
+            return GetResourceGroupResourceExtensionClient(resourceGroupResource).GetKubernetesClusters();
         }
 
         /// <summary>
@@ -666,17 +636,15 @@ namespace Azure.ResourceManager.NetworkCloud
         /// </item>
         /// </list>
         /// </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
         /// <param name="kubernetesClusterName"> The name of the Kubernetes cluster. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> or <paramref name="kubernetesClusterName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> or <paramref name="kubernetesClusterName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="kubernetesClusterName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="kubernetesClusterName"/> is null. </exception>
         [ForwardsClientCalls]
-        public static async Task<Response<KubernetesClusterResource>> GetKubernetesClusterAsync(this TenantResource tenantResource, Guid subscriptionId, string resourceGroupName, string kubernetesClusterName, CancellationToken cancellationToken = default)
+        public static async Task<Response<KubernetesClusterResource>> GetKubernetesClusterAsync(this ResourceGroupResource resourceGroupResource, string kubernetesClusterName, CancellationToken cancellationToken = default)
         {
-            return await tenantResource.GetKubernetesClusters(subscriptionId, resourceGroupName).GetAsync(kubernetesClusterName, cancellationToken).ConfigureAwait(false);
+            return await resourceGroupResource.GetKubernetesClusters().GetAsync(kubernetesClusterName, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -692,31 +660,23 @@ namespace Azure.ResourceManager.NetworkCloud
         /// </item>
         /// </list>
         /// </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
         /// <param name="kubernetesClusterName"> The name of the Kubernetes cluster. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> or <paramref name="kubernetesClusterName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> or <paramref name="kubernetesClusterName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="kubernetesClusterName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="kubernetesClusterName"/> is null. </exception>
         [ForwardsClientCalls]
-        public static Response<KubernetesClusterResource> GetKubernetesCluster(this TenantResource tenantResource, Guid subscriptionId, string resourceGroupName, string kubernetesClusterName, CancellationToken cancellationToken = default)
+        public static Response<KubernetesClusterResource> GetKubernetesCluster(this ResourceGroupResource resourceGroupResource, string kubernetesClusterName, CancellationToken cancellationToken = default)
         {
-            return tenantResource.GetKubernetesClusters(subscriptionId, resourceGroupName).Get(kubernetesClusterName, cancellationToken);
+            return resourceGroupResource.GetKubernetesClusters().Get(kubernetesClusterName, cancellationToken);
         }
 
-        /// <summary> Gets a collection of L2NetworkResources in the TenantResource. </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> is null. </exception>
+        /// <summary> Gets a collection of L2NetworkResources in the ResourceGroupResource. </summary>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
         /// <returns> An object representing collection of L2NetworkResources and their operations over a L2NetworkResource. </returns>
-        public static L2NetworkCollection GetL2Networks(this TenantResource tenantResource, Guid subscriptionId, string resourceGroupName)
+        public static L2NetworkCollection GetL2Networks(this ResourceGroupResource resourceGroupResource)
         {
-            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-
-            return GetTenantResourceExtensionClient(tenantResource).GetL2Networks(subscriptionId, resourceGroupName);
+            return GetResourceGroupResourceExtensionClient(resourceGroupResource).GetL2Networks();
         }
 
         /// <summary>
@@ -732,17 +692,15 @@ namespace Azure.ResourceManager.NetworkCloud
         /// </item>
         /// </list>
         /// </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
         /// <param name="l2NetworkName"> The name of the L2 network. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> or <paramref name="l2NetworkName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> or <paramref name="l2NetworkName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="l2NetworkName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="l2NetworkName"/> is null. </exception>
         [ForwardsClientCalls]
-        public static async Task<Response<L2NetworkResource>> GetL2NetworkAsync(this TenantResource tenantResource, Guid subscriptionId, string resourceGroupName, string l2NetworkName, CancellationToken cancellationToken = default)
+        public static async Task<Response<L2NetworkResource>> GetL2NetworkAsync(this ResourceGroupResource resourceGroupResource, string l2NetworkName, CancellationToken cancellationToken = default)
         {
-            return await tenantResource.GetL2Networks(subscriptionId, resourceGroupName).GetAsync(l2NetworkName, cancellationToken).ConfigureAwait(false);
+            return await resourceGroupResource.GetL2Networks().GetAsync(l2NetworkName, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -758,31 +716,23 @@ namespace Azure.ResourceManager.NetworkCloud
         /// </item>
         /// </list>
         /// </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
         /// <param name="l2NetworkName"> The name of the L2 network. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> or <paramref name="l2NetworkName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> or <paramref name="l2NetworkName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="l2NetworkName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="l2NetworkName"/> is null. </exception>
         [ForwardsClientCalls]
-        public static Response<L2NetworkResource> GetL2Network(this TenantResource tenantResource, Guid subscriptionId, string resourceGroupName, string l2NetworkName, CancellationToken cancellationToken = default)
+        public static Response<L2NetworkResource> GetL2Network(this ResourceGroupResource resourceGroupResource, string l2NetworkName, CancellationToken cancellationToken = default)
         {
-            return tenantResource.GetL2Networks(subscriptionId, resourceGroupName).Get(l2NetworkName, cancellationToken);
+            return resourceGroupResource.GetL2Networks().Get(l2NetworkName, cancellationToken);
         }
 
-        /// <summary> Gets a collection of L3NetworkResources in the TenantResource. </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> is null. </exception>
+        /// <summary> Gets a collection of L3NetworkResources in the ResourceGroupResource. </summary>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
         /// <returns> An object representing collection of L3NetworkResources and their operations over a L3NetworkResource. </returns>
-        public static L3NetworkCollection GetL3Networks(this TenantResource tenantResource, Guid subscriptionId, string resourceGroupName)
+        public static L3NetworkCollection GetL3Networks(this ResourceGroupResource resourceGroupResource)
         {
-            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-
-            return GetTenantResourceExtensionClient(tenantResource).GetL3Networks(subscriptionId, resourceGroupName);
+            return GetResourceGroupResourceExtensionClient(resourceGroupResource).GetL3Networks();
         }
 
         /// <summary>
@@ -798,17 +748,15 @@ namespace Azure.ResourceManager.NetworkCloud
         /// </item>
         /// </list>
         /// </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
         /// <param name="l3NetworkName"> The name of the L3 network. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> or <paramref name="l3NetworkName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> or <paramref name="l3NetworkName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="l3NetworkName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="l3NetworkName"/> is null. </exception>
         [ForwardsClientCalls]
-        public static async Task<Response<L3NetworkResource>> GetL3NetworkAsync(this TenantResource tenantResource, Guid subscriptionId, string resourceGroupName, string l3NetworkName, CancellationToken cancellationToken = default)
+        public static async Task<Response<L3NetworkResource>> GetL3NetworkAsync(this ResourceGroupResource resourceGroupResource, string l3NetworkName, CancellationToken cancellationToken = default)
         {
-            return await tenantResource.GetL3Networks(subscriptionId, resourceGroupName).GetAsync(l3NetworkName, cancellationToken).ConfigureAwait(false);
+            return await resourceGroupResource.GetL3Networks().GetAsync(l3NetworkName, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -824,90 +772,23 @@ namespace Azure.ResourceManager.NetworkCloud
         /// </item>
         /// </list>
         /// </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
         /// <param name="l3NetworkName"> The name of the L3 network. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> or <paramref name="l3NetworkName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> or <paramref name="l3NetworkName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="l3NetworkName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="l3NetworkName"/> is null. </exception>
         [ForwardsClientCalls]
-        public static Response<L3NetworkResource> GetL3Network(this TenantResource tenantResource, Guid subscriptionId, string resourceGroupName, string l3NetworkName, CancellationToken cancellationToken = default)
+        public static Response<L3NetworkResource> GetL3Network(this ResourceGroupResource resourceGroupResource, string l3NetworkName, CancellationToken cancellationToken = default)
         {
-            return tenantResource.GetL3Networks(subscriptionId, resourceGroupName).Get(l3NetworkName, cancellationToken);
+            return resourceGroupResource.GetL3Networks().Get(l3NetworkName, cancellationToken);
         }
 
-        /// <summary> Gets a collection of RackSkuResources in the TenantResource. </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
-        /// <returns> An object representing collection of RackSkuResources and their operations over a RackSkuResource. </returns>
-        public static RackSkuCollection GetRackSkus(this TenantResource tenantResource, Guid subscriptionId)
-        {
-            return GetTenantResourceExtensionClient(tenantResource).GetRackSkus(subscriptionId);
-        }
-
-        /// <summary>
-        /// Get the properties of the provided rack SKU.
-        /// <list type="bullet">
-        /// <item>
-        /// <term>Request Path</term>
-        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.NetworkCloud/rackSkus/{rackSkuName}</description>
-        /// </item>
-        /// <item>
-        /// <term>Operation Id</term>
-        /// <description>RackSkus_Get</description>
-        /// </item>
-        /// </list>
-        /// </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
-        /// <param name="rackSkuName"> The name of the rack SKU. </param>
-        /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="rackSkuName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="rackSkuName"/> is null. </exception>
-        [ForwardsClientCalls]
-        public static async Task<Response<RackSkuResource>> GetRackSkuAsync(this TenantResource tenantResource, Guid subscriptionId, string rackSkuName, CancellationToken cancellationToken = default)
-        {
-            return await tenantResource.GetRackSkus(subscriptionId).GetAsync(rackSkuName, cancellationToken).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Get the properties of the provided rack SKU.
-        /// <list type="bullet">
-        /// <item>
-        /// <term>Request Path</term>
-        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.NetworkCloud/rackSkus/{rackSkuName}</description>
-        /// </item>
-        /// <item>
-        /// <term>Operation Id</term>
-        /// <description>RackSkus_Get</description>
-        /// </item>
-        /// </list>
-        /// </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
-        /// <param name="rackSkuName"> The name of the rack SKU. </param>
-        /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="rackSkuName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="rackSkuName"/> is null. </exception>
-        [ForwardsClientCalls]
-        public static Response<RackSkuResource> GetRackSku(this TenantResource tenantResource, Guid subscriptionId, string rackSkuName, CancellationToken cancellationToken = default)
-        {
-            return tenantResource.GetRackSkus(subscriptionId).Get(rackSkuName, cancellationToken);
-        }
-
-        /// <summary> Gets a collection of RackResources in the TenantResource. </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> is null. </exception>
+        /// <summary> Gets a collection of RackResources in the ResourceGroupResource. </summary>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
         /// <returns> An object representing collection of RackResources and their operations over a RackResource. </returns>
-        public static RackCollection GetRacks(this TenantResource tenantResource, Guid subscriptionId, string resourceGroupName)
+        public static RackCollection GetRacks(this ResourceGroupResource resourceGroupResource)
         {
-            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-
-            return GetTenantResourceExtensionClient(tenantResource).GetRacks(subscriptionId, resourceGroupName);
+            return GetResourceGroupResourceExtensionClient(resourceGroupResource).GetRacks();
         }
 
         /// <summary>
@@ -923,17 +804,15 @@ namespace Azure.ResourceManager.NetworkCloud
         /// </item>
         /// </list>
         /// </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
         /// <param name="rackName"> The name of the rack. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> or <paramref name="rackName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> or <paramref name="rackName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="rackName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="rackName"/> is null. </exception>
         [ForwardsClientCalls]
-        public static async Task<Response<RackResource>> GetRackAsync(this TenantResource tenantResource, Guid subscriptionId, string resourceGroupName, string rackName, CancellationToken cancellationToken = default)
+        public static async Task<Response<RackResource>> GetRackAsync(this ResourceGroupResource resourceGroupResource, string rackName, CancellationToken cancellationToken = default)
         {
-            return await tenantResource.GetRacks(subscriptionId, resourceGroupName).GetAsync(rackName, cancellationToken).ConfigureAwait(false);
+            return await resourceGroupResource.GetRacks().GetAsync(rackName, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -949,31 +828,23 @@ namespace Azure.ResourceManager.NetworkCloud
         /// </item>
         /// </list>
         /// </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
         /// <param name="rackName"> The name of the rack. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> or <paramref name="rackName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> or <paramref name="rackName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="rackName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="rackName"/> is null. </exception>
         [ForwardsClientCalls]
-        public static Response<RackResource> GetRack(this TenantResource tenantResource, Guid subscriptionId, string resourceGroupName, string rackName, CancellationToken cancellationToken = default)
+        public static Response<RackResource> GetRack(this ResourceGroupResource resourceGroupResource, string rackName, CancellationToken cancellationToken = default)
         {
-            return tenantResource.GetRacks(subscriptionId, resourceGroupName).Get(rackName, cancellationToken);
+            return resourceGroupResource.GetRacks().Get(rackName, cancellationToken);
         }
 
-        /// <summary> Gets a collection of StorageApplianceResources in the TenantResource. </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> is null. </exception>
+        /// <summary> Gets a collection of StorageApplianceResources in the ResourceGroupResource. </summary>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
         /// <returns> An object representing collection of StorageApplianceResources and their operations over a StorageApplianceResource. </returns>
-        public static StorageApplianceCollection GetStorageAppliances(this TenantResource tenantResource, Guid subscriptionId, string resourceGroupName)
+        public static StorageApplianceCollection GetStorageAppliances(this ResourceGroupResource resourceGroupResource)
         {
-            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-
-            return GetTenantResourceExtensionClient(tenantResource).GetStorageAppliances(subscriptionId, resourceGroupName);
+            return GetResourceGroupResourceExtensionClient(resourceGroupResource).GetStorageAppliances();
         }
 
         /// <summary>
@@ -989,17 +860,15 @@ namespace Azure.ResourceManager.NetworkCloud
         /// </item>
         /// </list>
         /// </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
         /// <param name="storageApplianceName"> The name of the storage appliance. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> or <paramref name="storageApplianceName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> or <paramref name="storageApplianceName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="storageApplianceName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="storageApplianceName"/> is null. </exception>
         [ForwardsClientCalls]
-        public static async Task<Response<StorageApplianceResource>> GetStorageApplianceAsync(this TenantResource tenantResource, Guid subscriptionId, string resourceGroupName, string storageApplianceName, CancellationToken cancellationToken = default)
+        public static async Task<Response<StorageApplianceResource>> GetStorageApplianceAsync(this ResourceGroupResource resourceGroupResource, string storageApplianceName, CancellationToken cancellationToken = default)
         {
-            return await tenantResource.GetStorageAppliances(subscriptionId, resourceGroupName).GetAsync(storageApplianceName, cancellationToken).ConfigureAwait(false);
+            return await resourceGroupResource.GetStorageAppliances().GetAsync(storageApplianceName, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -1015,31 +884,23 @@ namespace Azure.ResourceManager.NetworkCloud
         /// </item>
         /// </list>
         /// </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
         /// <param name="storageApplianceName"> The name of the storage appliance. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> or <paramref name="storageApplianceName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> or <paramref name="storageApplianceName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="storageApplianceName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="storageApplianceName"/> is null. </exception>
         [ForwardsClientCalls]
-        public static Response<StorageApplianceResource> GetStorageAppliance(this TenantResource tenantResource, Guid subscriptionId, string resourceGroupName, string storageApplianceName, CancellationToken cancellationToken = default)
+        public static Response<StorageApplianceResource> GetStorageAppliance(this ResourceGroupResource resourceGroupResource, string storageApplianceName, CancellationToken cancellationToken = default)
         {
-            return tenantResource.GetStorageAppliances(subscriptionId, resourceGroupName).Get(storageApplianceName, cancellationToken);
+            return resourceGroupResource.GetStorageAppliances().Get(storageApplianceName, cancellationToken);
         }
 
-        /// <summary> Gets a collection of TrunkedNetworkResources in the TenantResource. </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> is null. </exception>
+        /// <summary> Gets a collection of TrunkedNetworkResources in the ResourceGroupResource. </summary>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
         /// <returns> An object representing collection of TrunkedNetworkResources and their operations over a TrunkedNetworkResource. </returns>
-        public static TrunkedNetworkCollection GetTrunkedNetworks(this TenantResource tenantResource, Guid subscriptionId, string resourceGroupName)
+        public static TrunkedNetworkCollection GetTrunkedNetworks(this ResourceGroupResource resourceGroupResource)
         {
-            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-
-            return GetTenantResourceExtensionClient(tenantResource).GetTrunkedNetworks(subscriptionId, resourceGroupName);
+            return GetResourceGroupResourceExtensionClient(resourceGroupResource).GetTrunkedNetworks();
         }
 
         /// <summary>
@@ -1055,17 +916,15 @@ namespace Azure.ResourceManager.NetworkCloud
         /// </item>
         /// </list>
         /// </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
         /// <param name="trunkedNetworkName"> The name of the trunked network. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> or <paramref name="trunkedNetworkName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> or <paramref name="trunkedNetworkName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="trunkedNetworkName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="trunkedNetworkName"/> is null. </exception>
         [ForwardsClientCalls]
-        public static async Task<Response<TrunkedNetworkResource>> GetTrunkedNetworkAsync(this TenantResource tenantResource, Guid subscriptionId, string resourceGroupName, string trunkedNetworkName, CancellationToken cancellationToken = default)
+        public static async Task<Response<TrunkedNetworkResource>> GetTrunkedNetworkAsync(this ResourceGroupResource resourceGroupResource, string trunkedNetworkName, CancellationToken cancellationToken = default)
         {
-            return await tenantResource.GetTrunkedNetworks(subscriptionId, resourceGroupName).GetAsync(trunkedNetworkName, cancellationToken).ConfigureAwait(false);
+            return await resourceGroupResource.GetTrunkedNetworks().GetAsync(trunkedNetworkName, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -1081,31 +940,23 @@ namespace Azure.ResourceManager.NetworkCloud
         /// </item>
         /// </list>
         /// </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
         /// <param name="trunkedNetworkName"> The name of the trunked network. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> or <paramref name="trunkedNetworkName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> or <paramref name="trunkedNetworkName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="trunkedNetworkName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="trunkedNetworkName"/> is null. </exception>
         [ForwardsClientCalls]
-        public static Response<TrunkedNetworkResource> GetTrunkedNetwork(this TenantResource tenantResource, Guid subscriptionId, string resourceGroupName, string trunkedNetworkName, CancellationToken cancellationToken = default)
+        public static Response<TrunkedNetworkResource> GetTrunkedNetwork(this ResourceGroupResource resourceGroupResource, string trunkedNetworkName, CancellationToken cancellationToken = default)
         {
-            return tenantResource.GetTrunkedNetworks(subscriptionId, resourceGroupName).Get(trunkedNetworkName, cancellationToken);
+            return resourceGroupResource.GetTrunkedNetworks().Get(trunkedNetworkName, cancellationToken);
         }
 
-        /// <summary> Gets a collection of VirtualMachineResources in the TenantResource. </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> is null. </exception>
+        /// <summary> Gets a collection of VirtualMachineResources in the ResourceGroupResource. </summary>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
         /// <returns> An object representing collection of VirtualMachineResources and their operations over a VirtualMachineResource. </returns>
-        public static VirtualMachineCollection GetVirtualMachines(this TenantResource tenantResource, Guid subscriptionId, string resourceGroupName)
+        public static VirtualMachineCollection GetVirtualMachines(this ResourceGroupResource resourceGroupResource)
         {
-            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-
-            return GetTenantResourceExtensionClient(tenantResource).GetVirtualMachines(subscriptionId, resourceGroupName);
+            return GetResourceGroupResourceExtensionClient(resourceGroupResource).GetVirtualMachines();
         }
 
         /// <summary>
@@ -1121,17 +972,15 @@ namespace Azure.ResourceManager.NetworkCloud
         /// </item>
         /// </list>
         /// </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
         /// <param name="virtualMachineName"> The name of the virtual machine. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> or <paramref name="virtualMachineName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> or <paramref name="virtualMachineName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="virtualMachineName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="virtualMachineName"/> is null. </exception>
         [ForwardsClientCalls]
-        public static async Task<Response<VirtualMachineResource>> GetVirtualMachineAsync(this TenantResource tenantResource, Guid subscriptionId, string resourceGroupName, string virtualMachineName, CancellationToken cancellationToken = default)
+        public static async Task<Response<VirtualMachineResource>> GetVirtualMachineAsync(this ResourceGroupResource resourceGroupResource, string virtualMachineName, CancellationToken cancellationToken = default)
         {
-            return await tenantResource.GetVirtualMachines(subscriptionId, resourceGroupName).GetAsync(virtualMachineName, cancellationToken).ConfigureAwait(false);
+            return await resourceGroupResource.GetVirtualMachines().GetAsync(virtualMachineName, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -1147,31 +996,23 @@ namespace Azure.ResourceManager.NetworkCloud
         /// </item>
         /// </list>
         /// </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
         /// <param name="virtualMachineName"> The name of the virtual machine. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> or <paramref name="virtualMachineName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> or <paramref name="virtualMachineName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="virtualMachineName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="virtualMachineName"/> is null. </exception>
         [ForwardsClientCalls]
-        public static Response<VirtualMachineResource> GetVirtualMachine(this TenantResource tenantResource, Guid subscriptionId, string resourceGroupName, string virtualMachineName, CancellationToken cancellationToken = default)
+        public static Response<VirtualMachineResource> GetVirtualMachine(this ResourceGroupResource resourceGroupResource, string virtualMachineName, CancellationToken cancellationToken = default)
         {
-            return tenantResource.GetVirtualMachines(subscriptionId, resourceGroupName).Get(virtualMachineName, cancellationToken);
+            return resourceGroupResource.GetVirtualMachines().Get(virtualMachineName, cancellationToken);
         }
 
-        /// <summary> Gets a collection of VolumeResources in the TenantResource. </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> is null. </exception>
+        /// <summary> Gets a collection of VolumeResources in the ResourceGroupResource. </summary>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
         /// <returns> An object representing collection of VolumeResources and their operations over a VolumeResource. </returns>
-        public static VolumeCollection GetVolumes(this TenantResource tenantResource, Guid subscriptionId, string resourceGroupName)
+        public static VolumeCollection GetVolumes(this ResourceGroupResource resourceGroupResource)
         {
-            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-
-            return GetTenantResourceExtensionClient(tenantResource).GetVolumes(subscriptionId, resourceGroupName);
+            return GetResourceGroupResourceExtensionClient(resourceGroupResource).GetVolumes();
         }
 
         /// <summary>
@@ -1187,17 +1028,15 @@ namespace Azure.ResourceManager.NetworkCloud
         /// </item>
         /// </list>
         /// </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
         /// <param name="volumeName"> The name of the volume. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> or <paramref name="volumeName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> or <paramref name="volumeName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="volumeName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="volumeName"/> is null. </exception>
         [ForwardsClientCalls]
-        public static async Task<Response<VolumeResource>> GetVolumeAsync(this TenantResource tenantResource, Guid subscriptionId, string resourceGroupName, string volumeName, CancellationToken cancellationToken = default)
+        public static async Task<Response<VolumeResource>> GetVolumeAsync(this ResourceGroupResource resourceGroupResource, string volumeName, CancellationToken cancellationToken = default)
         {
-            return await tenantResource.GetVolumes(subscriptionId, resourceGroupName).GetAsync(volumeName, cancellationToken).ConfigureAwait(false);
+            return await resourceGroupResource.GetVolumes().GetAsync(volumeName, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -1213,17 +1052,71 @@ namespace Azure.ResourceManager.NetworkCloud
         /// </item>
         /// </list>
         /// </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
         /// <param name="volumeName"> The name of the volume. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="resourceGroupName"/> or <paramref name="volumeName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupName"/> or <paramref name="volumeName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="volumeName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="volumeName"/> is null. </exception>
         [ForwardsClientCalls]
-        public static Response<VolumeResource> GetVolume(this TenantResource tenantResource, Guid subscriptionId, string resourceGroupName, string volumeName, CancellationToken cancellationToken = default)
+        public static Response<VolumeResource> GetVolume(this ResourceGroupResource resourceGroupResource, string volumeName, CancellationToken cancellationToken = default)
         {
-            return tenantResource.GetVolumes(subscriptionId, resourceGroupName).Get(volumeName, cancellationToken);
+            return resourceGroupResource.GetVolumes().Get(volumeName, cancellationToken);
+        }
+
+        /// <summary> Gets a collection of RackSkuResources in the SubscriptionResource. </summary>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
+        /// <returns> An object representing collection of RackSkuResources and their operations over a RackSkuResource. </returns>
+        public static RackSkuCollection GetRackSkus(this SubscriptionResource subscriptionResource)
+        {
+            return GetSubscriptionResourceExtensionClient(subscriptionResource).GetRackSkus();
+        }
+
+        /// <summary>
+        /// Get the properties of the provided rack SKU.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.NetworkCloud/rackSkus/{rackSkuName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>RackSkus_Get</description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
+        /// <param name="rackSkuName"> The name of the rack SKU. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="rackSkuName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="rackSkuName"/> is null. </exception>
+        [ForwardsClientCalls]
+        public static async Task<Response<RackSkuResource>> GetRackSkuAsync(this SubscriptionResource subscriptionResource, string rackSkuName, CancellationToken cancellationToken = default)
+        {
+            return await subscriptionResource.GetRackSkus().GetAsync(rackSkuName, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Get the properties of the provided rack SKU.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.NetworkCloud/rackSkus/{rackSkuName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>RackSkus_Get</description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
+        /// <param name="rackSkuName"> The name of the rack SKU. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="rackSkuName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="rackSkuName"/> is null. </exception>
+        [ForwardsClientCalls]
+        public static Response<RackSkuResource> GetRackSku(this SubscriptionResource subscriptionResource, string rackSkuName, CancellationToken cancellationToken = default)
+        {
+            return subscriptionResource.GetRackSkus().Get(rackSkuName, cancellationToken);
         }
 
         /// <summary>
@@ -1239,12 +1132,12 @@ namespace Azure.ResourceManager.NetworkCloud
         /// </item>
         /// </list>
         /// </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <returns> An async collection of <see cref="BareMetalMachineResource" /> that may take multiple service requests to iterate over. </returns>
-        public static AsyncPageable<BareMetalMachineResource> GetBareMetalMachinesAsync(this TenantResource tenantResource, CancellationToken cancellationToken = default)
+        public static AsyncPageable<BareMetalMachineResource> GetBareMetalMachinesAsync(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
         {
-            return GetTenantResourceExtensionClient(tenantResource).GetBareMetalMachinesAsync(cancellationToken);
+            return GetSubscriptionResourceExtensionClient(subscriptionResource).GetBareMetalMachinesAsync(cancellationToken);
         }
 
         /// <summary>
@@ -1260,12 +1153,12 @@ namespace Azure.ResourceManager.NetworkCloud
         /// </item>
         /// </list>
         /// </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <returns> A collection of <see cref="BareMetalMachineResource" /> that may take multiple service requests to iterate over. </returns>
-        public static Pageable<BareMetalMachineResource> GetBareMetalMachines(this TenantResource tenantResource, CancellationToken cancellationToken = default)
+        public static Pageable<BareMetalMachineResource> GetBareMetalMachines(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
         {
-            return GetTenantResourceExtensionClient(tenantResource).GetBareMetalMachines(cancellationToken);
+            return GetSubscriptionResourceExtensionClient(subscriptionResource).GetBareMetalMachines(cancellationToken);
         }
 
         /// <summary>
@@ -1281,12 +1174,12 @@ namespace Azure.ResourceManager.NetworkCloud
         /// </item>
         /// </list>
         /// </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <returns> An async collection of <see cref="CloudServicesNetworkResource" /> that may take multiple service requests to iterate over. </returns>
-        public static AsyncPageable<CloudServicesNetworkResource> GetCloudServicesNetworksAsync(this TenantResource tenantResource, CancellationToken cancellationToken = default)
+        public static AsyncPageable<CloudServicesNetworkResource> GetCloudServicesNetworksAsync(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
         {
-            return GetTenantResourceExtensionClient(tenantResource).GetCloudServicesNetworksAsync(cancellationToken);
+            return GetSubscriptionResourceExtensionClient(subscriptionResource).GetCloudServicesNetworksAsync(cancellationToken);
         }
 
         /// <summary>
@@ -1302,12 +1195,12 @@ namespace Azure.ResourceManager.NetworkCloud
         /// </item>
         /// </list>
         /// </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <returns> A collection of <see cref="CloudServicesNetworkResource" /> that may take multiple service requests to iterate over. </returns>
-        public static Pageable<CloudServicesNetworkResource> GetCloudServicesNetworks(this TenantResource tenantResource, CancellationToken cancellationToken = default)
+        public static Pageable<CloudServicesNetworkResource> GetCloudServicesNetworks(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
         {
-            return GetTenantResourceExtensionClient(tenantResource).GetCloudServicesNetworks(cancellationToken);
+            return GetSubscriptionResourceExtensionClient(subscriptionResource).GetCloudServicesNetworks(cancellationToken);
         }
 
         /// <summary>
@@ -1323,12 +1216,12 @@ namespace Azure.ResourceManager.NetworkCloud
         /// </item>
         /// </list>
         /// </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <returns> An async collection of <see cref="ClusterManagerResource" /> that may take multiple service requests to iterate over. </returns>
-        public static AsyncPageable<ClusterManagerResource> GetClusterManagersAsync(this TenantResource tenantResource, CancellationToken cancellationToken = default)
+        public static AsyncPageable<ClusterManagerResource> GetClusterManagersAsync(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
         {
-            return GetTenantResourceExtensionClient(tenantResource).GetClusterManagersAsync(cancellationToken);
+            return GetSubscriptionResourceExtensionClient(subscriptionResource).GetClusterManagersAsync(cancellationToken);
         }
 
         /// <summary>
@@ -1344,12 +1237,12 @@ namespace Azure.ResourceManager.NetworkCloud
         /// </item>
         /// </list>
         /// </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <returns> A collection of <see cref="ClusterManagerResource" /> that may take multiple service requests to iterate over. </returns>
-        public static Pageable<ClusterManagerResource> GetClusterManagers(this TenantResource tenantResource, CancellationToken cancellationToken = default)
+        public static Pageable<ClusterManagerResource> GetClusterManagers(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
         {
-            return GetTenantResourceExtensionClient(tenantResource).GetClusterManagers(cancellationToken);
+            return GetSubscriptionResourceExtensionClient(subscriptionResource).GetClusterManagers(cancellationToken);
         }
 
         /// <summary>
@@ -1365,12 +1258,12 @@ namespace Azure.ResourceManager.NetworkCloud
         /// </item>
         /// </list>
         /// </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <returns> An async collection of <see cref="ClusterResource" /> that may take multiple service requests to iterate over. </returns>
-        public static AsyncPageable<ClusterResource> GetClustersAsync(this TenantResource tenantResource, CancellationToken cancellationToken = default)
+        public static AsyncPageable<ClusterResource> GetClustersAsync(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
         {
-            return GetTenantResourceExtensionClient(tenantResource).GetClustersAsync(cancellationToken);
+            return GetSubscriptionResourceExtensionClient(subscriptionResource).GetClustersAsync(cancellationToken);
         }
 
         /// <summary>
@@ -1386,12 +1279,12 @@ namespace Azure.ResourceManager.NetworkCloud
         /// </item>
         /// </list>
         /// </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <returns> A collection of <see cref="ClusterResource" /> that may take multiple service requests to iterate over. </returns>
-        public static Pageable<ClusterResource> GetClusters(this TenantResource tenantResource, CancellationToken cancellationToken = default)
+        public static Pageable<ClusterResource> GetClusters(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
         {
-            return GetTenantResourceExtensionClient(tenantResource).GetClusters(cancellationToken);
+            return GetSubscriptionResourceExtensionClient(subscriptionResource).GetClusters(cancellationToken);
         }
 
         /// <summary>
@@ -1407,12 +1300,12 @@ namespace Azure.ResourceManager.NetworkCloud
         /// </item>
         /// </list>
         /// </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <returns> An async collection of <see cref="KubernetesClusterResource" /> that may take multiple service requests to iterate over. </returns>
-        public static AsyncPageable<KubernetesClusterResource> GetKubernetesClustersAsync(this TenantResource tenantResource, CancellationToken cancellationToken = default)
+        public static AsyncPageable<KubernetesClusterResource> GetKubernetesClustersAsync(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
         {
-            return GetTenantResourceExtensionClient(tenantResource).GetKubernetesClustersAsync(cancellationToken);
+            return GetSubscriptionResourceExtensionClient(subscriptionResource).GetKubernetesClustersAsync(cancellationToken);
         }
 
         /// <summary>
@@ -1428,12 +1321,12 @@ namespace Azure.ResourceManager.NetworkCloud
         /// </item>
         /// </list>
         /// </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <returns> A collection of <see cref="KubernetesClusterResource" /> that may take multiple service requests to iterate over. </returns>
-        public static Pageable<KubernetesClusterResource> GetKubernetesClusters(this TenantResource tenantResource, CancellationToken cancellationToken = default)
+        public static Pageable<KubernetesClusterResource> GetKubernetesClusters(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
         {
-            return GetTenantResourceExtensionClient(tenantResource).GetKubernetesClusters(cancellationToken);
+            return GetSubscriptionResourceExtensionClient(subscriptionResource).GetKubernetesClusters(cancellationToken);
         }
 
         /// <summary>
@@ -1449,12 +1342,12 @@ namespace Azure.ResourceManager.NetworkCloud
         /// </item>
         /// </list>
         /// </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <returns> An async collection of <see cref="L2NetworkResource" /> that may take multiple service requests to iterate over. </returns>
-        public static AsyncPageable<L2NetworkResource> GetL2NetworksAsync(this TenantResource tenantResource, CancellationToken cancellationToken = default)
+        public static AsyncPageable<L2NetworkResource> GetL2NetworksAsync(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
         {
-            return GetTenantResourceExtensionClient(tenantResource).GetL2NetworksAsync(cancellationToken);
+            return GetSubscriptionResourceExtensionClient(subscriptionResource).GetL2NetworksAsync(cancellationToken);
         }
 
         /// <summary>
@@ -1470,12 +1363,12 @@ namespace Azure.ResourceManager.NetworkCloud
         /// </item>
         /// </list>
         /// </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <returns> A collection of <see cref="L2NetworkResource" /> that may take multiple service requests to iterate over. </returns>
-        public static Pageable<L2NetworkResource> GetL2Networks(this TenantResource tenantResource, CancellationToken cancellationToken = default)
+        public static Pageable<L2NetworkResource> GetL2Networks(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
         {
-            return GetTenantResourceExtensionClient(tenantResource).GetL2Networks(cancellationToken);
+            return GetSubscriptionResourceExtensionClient(subscriptionResource).GetL2Networks(cancellationToken);
         }
 
         /// <summary>
@@ -1491,12 +1384,12 @@ namespace Azure.ResourceManager.NetworkCloud
         /// </item>
         /// </list>
         /// </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <returns> An async collection of <see cref="L3NetworkResource" /> that may take multiple service requests to iterate over. </returns>
-        public static AsyncPageable<L3NetworkResource> GetL3NetworksAsync(this TenantResource tenantResource, CancellationToken cancellationToken = default)
+        public static AsyncPageable<L3NetworkResource> GetL3NetworksAsync(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
         {
-            return GetTenantResourceExtensionClient(tenantResource).GetL3NetworksAsync(cancellationToken);
+            return GetSubscriptionResourceExtensionClient(subscriptionResource).GetL3NetworksAsync(cancellationToken);
         }
 
         /// <summary>
@@ -1512,12 +1405,12 @@ namespace Azure.ResourceManager.NetworkCloud
         /// </item>
         /// </list>
         /// </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <returns> A collection of <see cref="L3NetworkResource" /> that may take multiple service requests to iterate over. </returns>
-        public static Pageable<L3NetworkResource> GetL3Networks(this TenantResource tenantResource, CancellationToken cancellationToken = default)
+        public static Pageable<L3NetworkResource> GetL3Networks(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
         {
-            return GetTenantResourceExtensionClient(tenantResource).GetL3Networks(cancellationToken);
+            return GetSubscriptionResourceExtensionClient(subscriptionResource).GetL3Networks(cancellationToken);
         }
 
         /// <summary>
@@ -1533,12 +1426,12 @@ namespace Azure.ResourceManager.NetworkCloud
         /// </item>
         /// </list>
         /// </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <returns> An async collection of <see cref="RackResource" /> that may take multiple service requests to iterate over. </returns>
-        public static AsyncPageable<RackResource> GetRacksAsync(this TenantResource tenantResource, CancellationToken cancellationToken = default)
+        public static AsyncPageable<RackResource> GetRacksAsync(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
         {
-            return GetTenantResourceExtensionClient(tenantResource).GetRacksAsync(cancellationToken);
+            return GetSubscriptionResourceExtensionClient(subscriptionResource).GetRacksAsync(cancellationToken);
         }
 
         /// <summary>
@@ -1554,12 +1447,12 @@ namespace Azure.ResourceManager.NetworkCloud
         /// </item>
         /// </list>
         /// </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <returns> A collection of <see cref="RackResource" /> that may take multiple service requests to iterate over. </returns>
-        public static Pageable<RackResource> GetRacks(this TenantResource tenantResource, CancellationToken cancellationToken = default)
+        public static Pageable<RackResource> GetRacks(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
         {
-            return GetTenantResourceExtensionClient(tenantResource).GetRacks(cancellationToken);
+            return GetSubscriptionResourceExtensionClient(subscriptionResource).GetRacks(cancellationToken);
         }
 
         /// <summary>
@@ -1575,12 +1468,12 @@ namespace Azure.ResourceManager.NetworkCloud
         /// </item>
         /// </list>
         /// </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <returns> An async collection of <see cref="StorageApplianceResource" /> that may take multiple service requests to iterate over. </returns>
-        public static AsyncPageable<StorageApplianceResource> GetStorageAppliancesAsync(this TenantResource tenantResource, CancellationToken cancellationToken = default)
+        public static AsyncPageable<StorageApplianceResource> GetStorageAppliancesAsync(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
         {
-            return GetTenantResourceExtensionClient(tenantResource).GetStorageAppliancesAsync(cancellationToken);
+            return GetSubscriptionResourceExtensionClient(subscriptionResource).GetStorageAppliancesAsync(cancellationToken);
         }
 
         /// <summary>
@@ -1596,12 +1489,12 @@ namespace Azure.ResourceManager.NetworkCloud
         /// </item>
         /// </list>
         /// </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <returns> A collection of <see cref="StorageApplianceResource" /> that may take multiple service requests to iterate over. </returns>
-        public static Pageable<StorageApplianceResource> GetStorageAppliances(this TenantResource tenantResource, CancellationToken cancellationToken = default)
+        public static Pageable<StorageApplianceResource> GetStorageAppliances(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
         {
-            return GetTenantResourceExtensionClient(tenantResource).GetStorageAppliances(cancellationToken);
+            return GetSubscriptionResourceExtensionClient(subscriptionResource).GetStorageAppliances(cancellationToken);
         }
 
         /// <summary>
@@ -1617,12 +1510,12 @@ namespace Azure.ResourceManager.NetworkCloud
         /// </item>
         /// </list>
         /// </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <returns> An async collection of <see cref="TrunkedNetworkResource" /> that may take multiple service requests to iterate over. </returns>
-        public static AsyncPageable<TrunkedNetworkResource> GetTrunkedNetworksAsync(this TenantResource tenantResource, CancellationToken cancellationToken = default)
+        public static AsyncPageable<TrunkedNetworkResource> GetTrunkedNetworksAsync(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
         {
-            return GetTenantResourceExtensionClient(tenantResource).GetTrunkedNetworksAsync(cancellationToken);
+            return GetSubscriptionResourceExtensionClient(subscriptionResource).GetTrunkedNetworksAsync(cancellationToken);
         }
 
         /// <summary>
@@ -1638,12 +1531,12 @@ namespace Azure.ResourceManager.NetworkCloud
         /// </item>
         /// </list>
         /// </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <returns> A collection of <see cref="TrunkedNetworkResource" /> that may take multiple service requests to iterate over. </returns>
-        public static Pageable<TrunkedNetworkResource> GetTrunkedNetworks(this TenantResource tenantResource, CancellationToken cancellationToken = default)
+        public static Pageable<TrunkedNetworkResource> GetTrunkedNetworks(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
         {
-            return GetTenantResourceExtensionClient(tenantResource).GetTrunkedNetworks(cancellationToken);
+            return GetSubscriptionResourceExtensionClient(subscriptionResource).GetTrunkedNetworks(cancellationToken);
         }
 
         /// <summary>
@@ -1659,12 +1552,12 @@ namespace Azure.ResourceManager.NetworkCloud
         /// </item>
         /// </list>
         /// </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <returns> An async collection of <see cref="VirtualMachineResource" /> that may take multiple service requests to iterate over. </returns>
-        public static AsyncPageable<VirtualMachineResource> GetVirtualMachinesAsync(this TenantResource tenantResource, CancellationToken cancellationToken = default)
+        public static AsyncPageable<VirtualMachineResource> GetVirtualMachinesAsync(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
         {
-            return GetTenantResourceExtensionClient(tenantResource).GetVirtualMachinesAsync(cancellationToken);
+            return GetSubscriptionResourceExtensionClient(subscriptionResource).GetVirtualMachinesAsync(cancellationToken);
         }
 
         /// <summary>
@@ -1680,12 +1573,12 @@ namespace Azure.ResourceManager.NetworkCloud
         /// </item>
         /// </list>
         /// </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <returns> A collection of <see cref="VirtualMachineResource" /> that may take multiple service requests to iterate over. </returns>
-        public static Pageable<VirtualMachineResource> GetVirtualMachines(this TenantResource tenantResource, CancellationToken cancellationToken = default)
+        public static Pageable<VirtualMachineResource> GetVirtualMachines(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
         {
-            return GetTenantResourceExtensionClient(tenantResource).GetVirtualMachines(cancellationToken);
+            return GetSubscriptionResourceExtensionClient(subscriptionResource).GetVirtualMachines(cancellationToken);
         }
 
         /// <summary>
@@ -1701,12 +1594,12 @@ namespace Azure.ResourceManager.NetworkCloud
         /// </item>
         /// </list>
         /// </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <returns> An async collection of <see cref="VolumeResource" /> that may take multiple service requests to iterate over. </returns>
-        public static AsyncPageable<VolumeResource> GetVolumesAsync(this TenantResource tenantResource, CancellationToken cancellationToken = default)
+        public static AsyncPageable<VolumeResource> GetVolumesAsync(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
         {
-            return GetTenantResourceExtensionClient(tenantResource).GetVolumesAsync(cancellationToken);
+            return GetSubscriptionResourceExtensionClient(subscriptionResource).GetVolumesAsync(cancellationToken);
         }
 
         /// <summary>
@@ -1722,12 +1615,12 @@ namespace Azure.ResourceManager.NetworkCloud
         /// </item>
         /// </list>
         /// </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <returns> A collection of <see cref="VolumeResource" /> that may take multiple service requests to iterate over. </returns>
-        public static Pageable<VolumeResource> GetVolumes(this TenantResource tenantResource, CancellationToken cancellationToken = default)
+        public static Pageable<VolumeResource> GetVolumes(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
         {
-            return GetTenantResourceExtensionClient(tenantResource).GetVolumes(cancellationToken);
+            return GetSubscriptionResourceExtensionClient(subscriptionResource).GetVolumes(cancellationToken);
         }
     }
 }

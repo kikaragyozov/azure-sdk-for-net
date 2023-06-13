@@ -33,7 +33,7 @@ namespace Azure.ResourceManager.NetworkCloud.Samples
 
             // this example assumes you already have this AgentPoolResource created on azure
             // for more information of creating AgentPoolResource, please refer to the document of AgentPoolResource
-            Guid subscriptionId = Guid.Parse("123e4567-e89b-12d3-a456-426655440000");
+            string subscriptionId = "123e4567-e89b-12d3-a456-426655440000";
             string resourceGroupName = "resourceGroupName";
             string kubernetesClusterName = "kubernetesClusterName";
             string agentPoolName = "agentPoolName";
@@ -65,7 +65,7 @@ namespace Azure.ResourceManager.NetworkCloud.Samples
 
             // this example assumes you already have this AgentPoolResource created on azure
             // for more information of creating AgentPoolResource, please refer to the document of AgentPoolResource
-            Guid subscriptionId = Guid.Parse("123e4567-e89b-12d3-a456-426655440000");
+            string subscriptionId = "123e4567-e89b-12d3-a456-426655440000";
             string resourceGroupName = "resourceGroupName";
             string kubernetesClusterName = "kubernetesClusterName";
             string agentPoolName = "agentPoolName";
@@ -93,7 +93,7 @@ namespace Azure.ResourceManager.NetworkCloud.Samples
 
             // this example assumes you already have this AgentPoolResource created on azure
             // for more information of creating AgentPoolResource, please refer to the document of AgentPoolResource
-            Guid subscriptionId = Guid.Parse("123e4567-e89b-12d3-a456-426655440000");
+            string subscriptionId = "123e4567-e89b-12d3-a456-426655440000";
             string resourceGroupName = "resourceGroupName";
             string kubernetesClusterName = "kubernetesClusterName";
             string agentPoolName = "agentPoolName";
