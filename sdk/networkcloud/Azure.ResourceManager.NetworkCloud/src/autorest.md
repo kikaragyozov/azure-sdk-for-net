@@ -53,7 +53,7 @@ directive:
   - from: types.json
     where: $.parameters.SubscriptionIdParameter
     transform: >
-      delete $["format"];
+      delete $['format'];
   # explicitly define the expected format as duration
   - from: networkcloud.json
     where: $.definitions
